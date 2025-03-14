@@ -58,3 +58,9 @@ security:
   token:
     expiration-time: 24
     time-unit: HOURS
+
+storage:
+  cloudinary:
+    cloud-name: ${STORAGE_CLOUD_NAME}
+    api-key: ${STORAGE_API_KEY}
+    api-secret: ${STORAGE_API_SECRET}
