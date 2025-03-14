@@ -21,6 +21,21 @@
       "description": "The public key to validate JWT"
     },
     {
+      "name": "storage.cloudinary.cloud-name",
+      "type": "java.lang.String",
+      "description": "The cloud name that gives cloudinary"
+    },
+    {
+      "name": "storage.cloudinary.api-key",
+      "type": "java.lang.String",
+      "description": "The api key that gives cloudinary"
+    },
+    {
+      "name": "storage.cloudinary.api-secret",
+      "type": "java.lang.String",
+      "description": "The api secret that gives cloudinary"
+    },
+    {
       "name": "spring.jackson.mapper.[ACCEPT_CASE_INSENSITIVE_ENUMS]",
       "type": "java.lang.Boolean"
     }
