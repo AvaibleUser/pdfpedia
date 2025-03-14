@@ -33,7 +33,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/v1/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -45,7 +45,7 @@ public class AuthController {
     private final AuthenticationManager autheManager;
 
     private TokenDto toTokenDto(UserDto user) {
-        String token = tokenService.generateToken(user.id(), List.of());
+        String token = tokenService.generateToken(user.id(), List.of(user.roleName()));
         return new TokenDto(token, user);
     }
 
@@ -68,7 +68,8 @@ public class AuthController {
 
     @PutMapping("/sign-up")
     public TokenDto confirmSignUp(@RequestBody @Valid ConfirmUserDto user) {
-        boolean confirmed = codesService.confirmUserEmailCode(user.email(), user.code());
+        boolean confirmed = codesService.confirmUserEmailCode(user.email(),
+                user.code());
         if (!confirmed) {
             throw new FailedAuthenticateException("No se pudo confirmar la cuenta");
         }

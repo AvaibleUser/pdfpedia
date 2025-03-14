@@ -8,8 +8,5 @@ public record AddUserDto(
         @NotBlank String firstname,
         @NotBlank String lastname,
         @NotBlank String email,
-        @NotBlank String password,
-        @NotBlank String nit,
-        @NotBlank String cui,
-        @NotBlank String phone) {
+        @NotBlank String password) {
 }

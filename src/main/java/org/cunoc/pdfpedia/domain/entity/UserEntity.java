@@ -5,6 +5,7 @@ import static lombok.AccessLevel.PRIVATE;
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -17,6 +18,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -27,7 +30,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 @Entity(name = "user")
-@Table(name = "user")
+@Table(name = "user", schema = "user_control")
 @Data
 @Builder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
@@ -56,6 +59,11 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private String lastname;
 
+    @NonNull
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "role_id", nullable = false)
+    private RoleEntity role;
+
     @CreationTimestamp
     @Column
     private Instant createdAt;
@@ -71,10 +79,11 @@ public class UserEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        List<String> roles = List.of("role1", "role2");
-        return roles.stream()
-                .distinct()
+        return Optional.of(role)
+                .map(RoleEntity::getName)
+                .map("ROLE_"::concat)
                 .map(SimpleGrantedAuthority::new)
-                .toList();
+                .map(List::of)
+                .get();
     }
 }

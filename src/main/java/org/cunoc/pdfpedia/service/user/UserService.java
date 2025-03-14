@@ -4,8 +4,10 @@ import java.util.Optional;
 
 import org.cunoc.pdfpedia.domain.dto.user.AddUserDto;
 import org.cunoc.pdfpedia.domain.dto.user.UserDto;
+import org.cunoc.pdfpedia.domain.entity.RoleEntity;
 import org.cunoc.pdfpedia.domain.entity.UserEntity;
 import org.cunoc.pdfpedia.domain.exception.RequestConflictException;
+import org.cunoc.pdfpedia.repository.RoleRepository;
 import org.cunoc.pdfpedia.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -21,6 +23,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
     private final PasswordEncoder encoder;
 
     @Override
@@ -38,12 +41,14 @@ public class UserService implements UserDetailsService {
             throw new RequestConflictException("El email que se intenta registrar ya esta en uso");
         }
         String encryptedPassword = encoder.encode(user.password());
+        RoleEntity role = roleRepository.findByName("ADMIN");
 
         UserEntity newUser = UserEntity.builder()
                 .email(user.email())
                 .password(encryptedPassword)
                 .firstname(user.firstname())
                 .lastname(user.lastname())
+                .role(role)
                 .build();
 
         userRepository.save(newUser);

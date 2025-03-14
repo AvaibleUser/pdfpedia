@@ -38,6 +38,7 @@
       .code-container {
         margin: 10px 20px;
         display: flex;
+        font-size: 0;
       }
       .code {
         background-color: #181825;
@@ -57,12 +58,12 @@
     <div class="container">
       <h1>Código de Confirmación</h1>
       <h2>
-        <span class="important" th:text="${user.name}">Lorem</span>, para
+        <span class="important" th:text="${user.firstname}">Lorem</span>, para
         finalizar el registro de tu cuenta, introduce el siguiente código:
       </h2>
       <br />
       <div class="code-container">
-        <span th:each="c : code" class="important code" th:text="${c}">0</span>
+        <span th:each="c : ${code}" class="important code" th:text="${c}">0</span>
       </div>
       <br />
     </div>

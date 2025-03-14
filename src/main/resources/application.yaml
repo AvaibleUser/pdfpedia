@@ -4,23 +4,30 @@ server:
     include-message: always
     include-binding-errors: always
 
+  servlet:
+    context-path: /api
+
 logging:
   level:
-    root: "warn"
+    root: warn
     org:
       springframework:
-        web: "debug"
+        web: debug
         data:
-          rest: "debug"
+          rest: debug
 
 spring:
   application:
     name: RevistLand
 
+  messages:
+    basename: messages
+    encoding: UTF-8
+
   datasource:
     username: ${DB_USER}
     password: ${DB_PASS}
-    url: jdbc:mysql://${DB_HOST}/${DB_DATABASE}
+    url: jdbc:postgresql://${DB_HOST}/${DB_DATABASE}
 
   jackson:
     time-zone: UTC
@@ -30,7 +37,7 @@ spring:
   jpa:
     show-sql: true
     hibernate:
-      ddl-auto: validate
+      ddl-auto: update
 
     open-in-view: false
 

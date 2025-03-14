@@ -108,7 +108,7 @@ public class AuthConfig {
 
     private AbstractAuthenticationToken convertJwtToAuthentication(Jwt jwt) {
         long id = Long.parseLong(jwt.getSubject());
-        List<SimpleGrantedAuthority> authorities = jwt.getClaimAsStringList("auths")
+        List<SimpleGrantedAuthority> authorities = jwt.getClaimAsStringList("role")
                 .stream()
                 .map(SimpleGrantedAuthority::new)
                 .toList();
