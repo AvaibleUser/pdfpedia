@@ -81,7 +81,6 @@ public class UserEntity implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return Optional.of(role)
                 .map(RoleEntity::getName)
-                .map("ROLE_"::concat)
                 .map(SimpleGrantedAuthority::new)
                 .map(List::of)
                 .get();

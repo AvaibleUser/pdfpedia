@@ -20,6 +20,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.core.GrantedAuthorityDefaults;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,18 +43,20 @@ import com.warrenstrange.googleauth.GoogleAuthenticator;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity
+@EnableMethodSecurity(jsr250Enabled = true)
 public class AuthConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity, JwtDecoder jwtDecoder,
             UserService userDetailsService) throws Exception {
         return httpSecurity
-                .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .csrf(csrf -> csrf.disable())
-                .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
+                .cors(c -> c.configurationSource(corsConfigurationSource()))
+                .csrf(c -> c.disable())
+                .sessionManagement(s -> s.sessionCreationPolicy(STATELESS))
                 .userDetailsService(userDetailsService)
-                .authorizeHttpRequests(authorize -> authorize.anyRequest().permitAll())
+                .authorizeHttpRequests(a -> a
+                        .requestMatchers("/v1/auth/**").permitAll()
+                        .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwtCustomizer -> jwtCustomizer
                                 .decoder(jwtDecoder)
@@ -104,6 +107,11 @@ public class AuthConfig {
     @Bean
     ConcurrentMap<String, String> signUpCondifmationCodes() {
         return new ConcurrentHashMap<>();
+    }
+
+    @Bean
+    GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        return new GrantedAuthorityDefaults("");
     }
 
     private AbstractAuthenticationToken convertJwtToAuthentication(Jwt jwt) {
