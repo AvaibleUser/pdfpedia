@@ -43,7 +43,7 @@ import com.warrenstrange.googleauth.GoogleAuthenticator;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(jsr250Enabled = true)
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class AuthConfig {
 
     @Bean
@@ -56,7 +56,8 @@ public class AuthConfig {
                 .userDetailsService(userDetailsService)
                 .authorizeHttpRequests(a -> a
                         .requestMatchers("/v1/auth/**").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/v1/**").authenticated()
+                        .anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwtCustomizer -> jwtCustomizer
                                 .decoder(jwtDecoder)
