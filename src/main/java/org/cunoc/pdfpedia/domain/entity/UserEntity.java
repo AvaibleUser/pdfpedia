@@ -44,7 +44,11 @@ public class UserEntity implements UserDetails {
     private Long id;
 
     @NonNull
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
+    private String username;
+
+    @NonNull
+    @Column(nullable = false, unique = true)
     private String email;
 
     @NonNull
@@ -58,6 +62,18 @@ public class UserEntity implements UserDetails {
     @NonNull
     @Column(nullable = false)
     private String lastname;
+
+    @Column
+    private String profilePicture;
+
+    @Column
+    private String hobbies;
+
+    @Column
+    private String description;
+
+    @Column
+    private boolean isDeleted;
 
     @NonNull
     @ManyToOne(optional = false)
