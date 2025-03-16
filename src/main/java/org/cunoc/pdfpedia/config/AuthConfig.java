@@ -55,7 +55,10 @@ public class AuthConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(STATELESS))
                 .userDetailsService(userDetailsService)
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/v1/auth/**").permitAll()
+                        .requestMatchers("/v1/auth/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html").permitAll()
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwtCustomizer -> jwtCustomizer
