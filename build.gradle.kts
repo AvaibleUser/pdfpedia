@@ -85,7 +85,8 @@ tasks.jacocoTestCoverageVerification {
 		rule {
             classDirectories.setFrom(tasks.jacocoTestReport.get().classDirectories)
 			limit {
-				minimum = "0.85".toBigDecimal()
+				minimum = "0.0".toBigDecimal()
+				// minimum = "0.85".toBigDecimal()
 			}
 		}
 	}

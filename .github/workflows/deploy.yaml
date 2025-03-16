@@ -1,0 +1,53 @@
+name: Deploy
+
+on:
+  workflow_run:
+    workflows: Test and Build
+    branches:
+      - main
+      - dev
+    types:
+      - completed
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    steps:
+      # BEGIN - Enviroment setup
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # END - Enviroment setup
+
+      # BEGIN - GCP setup
+      - name: Determine environment
+        id: determine-env
+        run: |
+          # Determine environment based on branch
+          if [ "${{ github.ref_name }}" == "main" ]; then
+            echo "MY_PROJECT_ENV=prod" >> $GITHUB_ENV
+          else
+            echo "MY_PROJECT_ENV=dev" >> $GITHUB_ENV
+          fi
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_DEPLOY_SA }}
+
+      - name: Set up gcloud SDK
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+
+      # END - GCP setup
+
+      # BEGIN - Deploy
+      - name: Deploy to Cloud Run
+        uses: "google-github-actions/deploy-cloudrun@v2"
+        with:
+          image: "${{ secrets.GCP_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/my-images/revistland-${{ env.MY_PROJECT_ENV  }}:latest"
+          region: ${{ secrets.GCP_LOCATION }}
+
+      # END - Deploy
