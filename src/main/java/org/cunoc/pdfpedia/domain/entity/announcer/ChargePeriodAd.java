@@ -37,7 +37,7 @@ public class ChargePeriodAd {
     @Column(nullable = false,  precision = 10, scale = 2)
     private BigDecimal cost;
 
-    @OneToMany(mappedBy = "ad")
+    @OneToMany(mappedBy = "chargePeriodAd")
     private Set<AdEntity> ads;
 
 

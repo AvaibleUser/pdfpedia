@@ -3,7 +3,9 @@ package org.cunoc.pdfpedia.domain.entity.announcer;
 import jakarta.persistence.*;
 import lombok.*;
 import org.cunoc.pdfpedia.domain.entity.UserEntity;
+import org.hibernate.annotations.CreationTimestamp;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 
 import static lombok.AccessLevel.PRIVATE;
@@ -42,8 +44,9 @@ public class AdEntity {
     @Column(name = "video_url", length = 255)
     private String videoUrl;
 
-    @Column(name = "created_at", nullable = false, updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    @Column
+    private Instant createdAt;
 
     @NonNull
     @Column(name = "expires_at", nullable = false)
@@ -51,12 +54,5 @@ public class AdEntity {
 
     @Column(name = "is_deleted", nullable = false)
     private Boolean isDeleted = false;
-
-    @PrePersist
-    protected void onCreate() {
-        if (createdAt == null) {
-            createdAt = LocalDateTime.now();
-        }
-    }
 
 }
