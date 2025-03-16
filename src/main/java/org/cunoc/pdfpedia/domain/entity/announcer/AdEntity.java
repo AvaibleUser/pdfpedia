@@ -2,7 +2,8 @@ package org.cunoc.pdfpedia.domain.entity.announcer;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.cunoc.pdfpedia.domain.entity.UserEntity;
+
+import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
@@ -52,7 +53,7 @@ public class AdEntity {
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
 
-    @Column(name = "is_deleted", nullable = false)
-    private Boolean isDeleted = false;
+    @Column(name = "is_deleted")
+    private boolean isDeleted;
 
 }

@@ -1,12 +1,18 @@
-package org.cunoc.pdfpedia.domain.entity;
+package org.cunoc.pdfpedia.domain.entity.user;
 
+import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
 
 import java.time.Instant;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import org.cunoc.pdfpedia.domain.entity.interaction.CommentEntity;
+import org.cunoc.pdfpedia.domain.entity.interaction.SubscriptionEntity;
+import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
+import org.cunoc.pdfpedia.domain.entity.monetary.WalletEntity;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.security.core.GrantedAuthority;
@@ -16,10 +22,12 @@ import org.springframework.security.core.userdetails.UserDetails;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -40,7 +48,7 @@ import lombok.RequiredArgsConstructor;
 public class UserEntity implements UserDetails {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = IDENTITY)
     private Long id;
 
     @NonNull
@@ -55,22 +63,8 @@ public class UserEntity implements UserDetails {
     @Column(nullable = false)
     private String password;
 
-    @NonNull
-    @Column(nullable = false)
-    private String firstname;
-
-    @NonNull
-    @Column(nullable = false)
-    private String lastname;
-
     @Column
     private String profilePicture;
-
-    @Column
-    private String hobbies;
-
-    @Column
-    private String description;
 
     @Column
     private boolean isDeleted;
@@ -79,6 +73,28 @@ public class UserEntity implements UserDetails {
     @ManyToOne(optional = false)
     @JoinColumn(name = "role_id", nullable = false)
     private RoleEntity role;
+
+    @NonNull
+    @OneToOne(optional = false)
+    @JoinColumn(name = "profile_id", nullable = false, unique = true, updatable = true, insertable = true)
+    private ProfileEntity profile;
+
+    @NonNull
+    @OneToOne(optional = false)
+    @JoinColumn(name = "wallet_id", nullable = false, unique = true, updatable = true, insertable = true)
+    private WalletEntity wallet;
+
+    @OneToMany(mappedBy = "editor")
+    private Set<MagazineEntity> publishedMagazines;
+
+    @OneToMany(mappedBy = "user")
+    private Set<SubscriptionEntity> subscriptions;
+
+    @ManyToMany(mappedBy = "likes")
+    private Set<MagazineEntity> likes;
+
+    @OneToMany(mappedBy = "user")
+    private Set<CommentEntity> comments;
 
     @CreationTimestamp
     @Column

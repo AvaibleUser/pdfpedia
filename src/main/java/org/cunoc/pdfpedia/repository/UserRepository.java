@@ -2,7 +2,7 @@ package org.cunoc.pdfpedia.repository;
 
 import java.util.Optional;
 
-import org.cunoc.pdfpedia.domain.entity.UserEntity;
+import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
