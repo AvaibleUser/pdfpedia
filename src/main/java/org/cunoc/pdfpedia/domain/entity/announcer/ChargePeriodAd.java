@@ -3,10 +3,11 @@ package org.cunoc.pdfpedia.domain.entity.announcer;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.cunoc.pdfpedia.domain.entity.UserEntity;
 
 import java.math.BigDecimal;
 import java.util.Set;
+
+import org.cunoc.pdfpedia.domain.type.AdType;
 
 import static lombok.AccessLevel.PRIVATE;
 

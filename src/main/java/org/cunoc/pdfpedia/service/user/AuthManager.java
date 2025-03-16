@@ -4,7 +4,7 @@ import static org.springframework.security.authentication.UsernamePasswordAuthen
 
 import java.util.concurrent.ConcurrentMap;
 
-import org.cunoc.pdfpedia.domain.entity.UserEntity;
+import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
 import org.cunoc.pdfpedia.repository.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;

@@ -4,8 +4,9 @@ import java.util.Optional;
 
 import org.cunoc.pdfpedia.domain.dto.user.AddUserDto;
 import org.cunoc.pdfpedia.domain.dto.user.UserDto;
-import org.cunoc.pdfpedia.domain.entity.RoleEntity;
-import org.cunoc.pdfpedia.domain.entity.UserEntity;
+import org.cunoc.pdfpedia.domain.entity.user.ProfileEntity;
+import org.cunoc.pdfpedia.domain.entity.user.RoleEntity;
+import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
 import org.cunoc.pdfpedia.domain.exception.RequestConflictException;
 import org.cunoc.pdfpedia.repository.RoleRepository;
 import org.cunoc.pdfpedia.repository.UserRepository;
@@ -28,7 +29,8 @@ public class UserService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        throw new UsernameNotFoundException("No se pudo encontrar al usuario");
+        return userRepository.findByEmail(email, UserEntity.class)
+                .orElseThrow(() -> new UsernameNotFoundException("No se pudo encontrar al usuario"));
     }
 
     public Optional<UserDto> findUserByEmail(String email) {
@@ -43,12 +45,19 @@ public class UserService implements UserDetailsService {
         String encryptedPassword = encoder.encode(user.password());
         RoleEntity role = roleRepository.findByName("ADMIN");
 
+        ProfileEntity profile = ProfileEntity.builder()
+                .firstname(user.profile().firstname())
+                .lastname(user.profile().lastname())
+                .hobbies(user.profile().hobbies().orElse(null))
+                .description(user.profile().description().orElse(null))
+                .interestsTopics(user.profile().interestsTopics().orElse(null))
+                .build();
+
         UserEntity newUser = UserEntity.builder()
                 .email(user.email())
                 .password(encryptedPassword)
-                .firstname(user.firstname())
-                .lastname(user.lastname())
                 .role(role)
+                .profile(profile)
                 .build();
 
         userRepository.save(newUser);
