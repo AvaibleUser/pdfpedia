@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.cunoc.pdfpedia.config.property.RsaProperty;
-import org.cunoc.pdfpedia.repository.UserRepository;
+import org.cunoc.pdfpedia.repository.user.UserRepository;
 import org.cunoc.pdfpedia.service.user.AuthManager;
 import org.cunoc.pdfpedia.service.user.UserService;
 import org.springframework.context.annotation.Bean;

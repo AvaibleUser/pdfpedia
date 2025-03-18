@@ -5,8 +5,14 @@ import lombok.Builder;
 
 @Builder(toBuilder = true)
 public record AddUserDto(
+        @NotBlank String username,
+        @NotBlank String email,
+        @NotBlank String password,
         @NotBlank String firstname,
         @NotBlank String lastname,
-        @NotBlank String email,
-        @NotBlank String password) {
+        boolean isDeleted,
+        String profilePicture,
+        String hobbies,
+        String description,
+        String interestsTopics) {
 }
