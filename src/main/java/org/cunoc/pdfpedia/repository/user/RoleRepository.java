@@ -1,4 +1,4 @@
-package org.cunoc.pdfpedia.repository;
+package org.cunoc.pdfpedia.repository.user;
 
 import org.cunoc.pdfpedia.domain.entity.user.RoleEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

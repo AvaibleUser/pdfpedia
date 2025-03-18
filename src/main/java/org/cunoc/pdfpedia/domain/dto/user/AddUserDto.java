@@ -1,12 +1,5 @@
 package org.cunoc.pdfpedia.domain.dto.user;
 
-import java.util.Optional;
-
-import org.cunoc.pdfpedia.domain.dto.profile.AddProfileDto;
-
-import com.fasterxml.jackson.annotation.JsonUnwrapped;
-
-import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Builder;
 
@@ -15,7 +8,11 @@ public record AddUserDto(
         @NotBlank String username,
         @NotBlank String email,
         @NotBlank String password,
+        @NotBlank String firstname,
+        @NotBlank String lastname,
         boolean isDeleted,
-        Optional<String> profilePicture,
-        @JsonUnwrapped @Valid AddProfileDto profile) {
+        String profilePicture,
+        String hobbies,
+        String description,
+        String interestsTopics) {
 }

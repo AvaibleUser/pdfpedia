@@ -18,8 +18,8 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
-@Entity(name = "payment")
-@Table(name = "payment", schema = "monetary_control")
+@Entity(name = "configuration")
+@Table(name = "configuration", schema = "company_control")
 @Data
 @Builder(toBuilder = true)
 @EqualsAndHashCode(of = "id")

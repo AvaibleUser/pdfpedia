@@ -41,6 +41,10 @@ public class CategoryEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @NonNull
+    @Column(nullable = false)
+    private String description;
+
     @OneToMany(mappedBy = "category")
     private Set<MagazineEntity> magazines;
 
