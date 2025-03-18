@@ -44,7 +44,7 @@ public class TagEntity {
     private String name;
 
     @ManyToMany
-    @JoinTable(name = "magazine_tag", joinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "magazine_id", referencedColumnName = "id"))
+    @JoinTable(name = "magazine_tag", schema = "magazine_control", joinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "magazine_id", referencedColumnName = "id"))
     private Set<MagazineEntity> magazines;
 
     @CreationTimestamp

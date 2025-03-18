@@ -1,5 +1,6 @@
 package org.cunoc.pdfpedia.domain.entity.user;
 
+import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -75,13 +76,11 @@ public class UserEntity implements UserDetails {
     private RoleEntity role;
 
     @NonNull
-    @OneToOne(optional = false)
-    @JoinColumn(name = "profile_id", nullable = false, unique = true, updatable = true, insertable = true)
+    @OneToOne(mappedBy = "user", optional = false, cascade = ALL)
     private ProfileEntity profile;
 
     @NonNull
-    @OneToOne(optional = false)
-    @JoinColumn(name = "wallet_id", nullable = false, unique = true, updatable = true, insertable = true)
+    @OneToOne(mappedBy = "user", optional = false, cascade = ALL)
     private WalletEntity wallet;
 
     @OneToMany(mappedBy = "editor")

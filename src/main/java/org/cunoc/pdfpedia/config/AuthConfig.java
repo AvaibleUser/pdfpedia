@@ -10,7 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 import org.cunoc.pdfpedia.config.property.RsaProperty;
-import org.cunoc.pdfpedia.repository.UserRepository;
+import org.cunoc.pdfpedia.repository.user.UserRepository;
 import org.cunoc.pdfpedia.service.user.AuthManager;
 import org.cunoc.pdfpedia.service.user.UserService;
 import org.springframework.context.annotation.Bean;
@@ -55,11 +55,9 @@ public class AuthConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(STATELESS))
                 .userDetailsService(userDetailsService)
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/v1/auth/**",
-                                "/v3/api-docs/**",
-                                "/swagger-ui/**",
-                                "/swagger-ui.html").permitAll()
-                        .anyRequest().authenticated())
+                        .requestMatchers("/v1/auth/**").permitAll()
+                        .requestMatchers("/v1/**").authenticated()
+                        .anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwtCustomizer -> jwtCustomizer
                                 .decoder(jwtDecoder)
