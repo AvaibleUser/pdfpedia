@@ -33,7 +33,7 @@ public class AdEntity {
     @NonNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "ad_type", nullable = false)
-    private ChargePeriodAd chargePeriodAd;
+    private ChargePeriodAdEntity chargePeriodAd;
 
     @NonNull
     @Column(nullable = false, columnDefinition = "TEXT")
