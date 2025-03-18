@@ -1,15 +1,17 @@
 package org.cunoc.pdfpedia.service.user;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import org.cunoc.pdfpedia.domain.dto.user.AddUserDto;
 import org.cunoc.pdfpedia.domain.dto.user.UserDto;
+import org.cunoc.pdfpedia.domain.entity.monetary.WalletEntity;
 import org.cunoc.pdfpedia.domain.entity.user.ProfileEntity;
 import org.cunoc.pdfpedia.domain.entity.user.RoleEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
 import org.cunoc.pdfpedia.domain.exception.RequestConflictException;
-import org.cunoc.pdfpedia.repository.RoleRepository;
-import org.cunoc.pdfpedia.repository.UserRepository;
+import org.cunoc.pdfpedia.repository.user.RoleRepository;
+import org.cunoc.pdfpedia.repository.user.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -43,21 +45,23 @@ public class UserService implements UserDetailsService {
             throw new RequestConflictException("El email que se intenta registrar ya esta en uso");
         }
         String encryptedPassword = encoder.encode(user.password());
-        RoleEntity role = roleRepository.findByName("ADMIN");
+        RoleEntity role = roleRepository.findByName("EDITOR");
 
         ProfileEntity profile = ProfileEntity.builder()
-                .firstname(user.profile().firstname())
-                .lastname(user.profile().lastname())
-                .hobbies(user.profile().hobbies().orElse(null))
-                .description(user.profile().description().orElse(null))
-                .interestsTopics(user.profile().interestsTopics().orElse(null))
+                .firstname(user.firstname())
+                .lastname(user.lastname())
+                .hobbies(user.hobbies())
+                .description(user.description())
+                .interestsTopics(user.interestsTopics())
                 .build();
 
         UserEntity newUser = UserEntity.builder()
+                .username(user.username())
                 .email(user.email())
                 .password(encryptedPassword)
                 .role(role)
                 .profile(profile)
+                .wallet(new WalletEntity(BigDecimal.ZERO))
                 .build();
 
         userRepository.save(newUser);
