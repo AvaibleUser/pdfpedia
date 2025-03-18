@@ -1,4 +1,4 @@
-package org.cunoc.pdfpedia.repository;
+package org.cunoc.pdfpedia.repository.user;
 
 import java.util.Optional;
 

@@ -46,19 +46,17 @@ public class MagazineEntity {
     private Long id;
 
     @NonNull
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     private String title;
 
     @NonNull
     @Column(nullable = false)
     private String description;
 
-    @NonNull
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(precision = 10, scale = 2)
     private BigDecimal costPerDay;
 
-    @NonNull
-    @Column(nullable = false)
+    @Column
     private Instant adBlockingExpirationDate;
 
     @Column
@@ -93,7 +91,7 @@ public class MagazineEntity {
     private Set<SubscriptionEntity> subscriptions;
 
     @ManyToMany
-    @JoinTable(name = "like", joinColumns = @JoinColumn(name = "magazine_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
+    @JoinTable(name = "like", schema = "interaction_control", joinColumns = @JoinColumn(name = "magazine_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"))
     private Set<UserEntity> likes;
 
     @OneToMany(mappedBy = "magazine")
