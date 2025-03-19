@@ -19,12 +19,12 @@ public class chargePeriodAdController {
 
     @GetMapping
     public ResponseEntity<List<ChargePeriodAdDto>> getAll() {
-        return ResponseEntity.ok(chargePeriodAdService.findAll());
+        return ResponseEntity.ok(this.chargePeriodAdService.findAll());
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<ChargePeriodAdDto> update(@PathVariable Long id, @Valid @RequestBody ChargePeriodAdDto dto) {
-        return ResponseEntity.ok(chargePeriodAdService.update(id, dto));
+        return ResponseEntity.ok(this.chargePeriodAdService.update(id, dto));
     }
 
 

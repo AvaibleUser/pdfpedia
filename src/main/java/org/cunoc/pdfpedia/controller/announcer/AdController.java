@@ -18,7 +18,7 @@ public class AdController {
     private final AdService adService;
 
 
-    @PostMapping("/{id}")
+    @PostMapping()
     public ResponseEntity<AdDto> createAd(@Valid @RequestBody AdPostDto adPostDto, @CurrentUserId long userId){
         AdDto createdAd = adService.create(adPostDto, userId);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAd);

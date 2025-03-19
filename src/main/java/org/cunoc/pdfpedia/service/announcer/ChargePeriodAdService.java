@@ -38,7 +38,7 @@ public class ChargePeriodAdService {
 
     public ChargePeriodAdDto update(Long id, @Valid ChargePeriodAdDto dto) {
         ChargePeriodAdEntity existingEntity = chargePeriodAdRepository.findById(id)
-                .orElseThrow(() -> new ValueNotFoundException("Charge Period Ad not found"));
+                .orElseThrow(() -> new ValueNotFoundException("Periodo de vigencia no encontrado"));
 
         existingEntity.setAdType(dto.adType());
         existingEntity.setDurationDays(dto.durationDays());

@@ -59,7 +59,7 @@ public class AuthConfig {
                                 "/v3/api-docs/**",
                                 "/swagger-ui/**",
                                 "/swagger-ui.html",
-                                "/v1/announcers/charge-period-ads").permitAll()
+                                "/v1/roles").permitAll()
                         .requestMatchers("/v1/**").authenticated()
                         .anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2
