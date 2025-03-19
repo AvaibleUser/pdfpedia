@@ -43,7 +43,7 @@ import com.warrenstrange.googleauth.GoogleAuthenticator;
 
 @Configuration
 @EnableWebSecurity
-@EnableMethodSecurity(jsr250Enabled = true)
+@EnableMethodSecurity(prePostEnabled = true, securedEnabled = true, jsr250Enabled = true)
 public class AuthConfig {
 
     @Bean
