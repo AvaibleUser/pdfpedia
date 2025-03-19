@@ -44,8 +44,11 @@ public class UserService implements UserDetailsService {
         if (userRepository.existsByEmail(user.email())) {
             throw new RequestConflictException("El email que se intenta registrar ya esta en uso");
         }
+        if (!roleRepository.existsById(user.roleId())) {
+            throw new RequestConflictException("El rol que se intenta registrar no existe");
+        }
         String encryptedPassword = encoder.encode(user.password());
-        RoleEntity role = roleRepository.findByName("EDITOR");
+        RoleEntity role = roleRepository.findById(user.roleId()).get();
 
         ProfileEntity profile = ProfileEntity.builder()
                 .firstname(user.firstname())
