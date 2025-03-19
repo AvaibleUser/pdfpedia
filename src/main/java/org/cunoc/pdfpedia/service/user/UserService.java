@@ -55,14 +55,21 @@ public class UserService implements UserDetailsService {
                 .interestsTopics(user.interestsTopics())
                 .build();
 
+        WalletEntity wallet = WalletEntity.builder()
+                .balance(BigDecimal.ZERO)
+                .build();
+
         UserEntity newUser = UserEntity.builder()
                 .username(user.username())
                 .email(user.email())
                 .password(encryptedPassword)
                 .role(role)
                 .profile(profile)
-                .wallet(new WalletEntity(BigDecimal.ZERO))
+                .wallet(wallet)
                 .build();
+
+        profile.setUser(newUser);
+        wallet.setUser(newUser);
 
         userRepository.save(newUser);
     }

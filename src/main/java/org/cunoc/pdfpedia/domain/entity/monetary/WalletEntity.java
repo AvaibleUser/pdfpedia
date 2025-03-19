@@ -1,5 +1,6 @@
 package org.cunoc.pdfpedia.domain.entity.monetary;
 
+import static jakarta.persistence.CascadeType.ALL;
 import static jakarta.persistence.GenerationType.IDENTITY;
 import static lombok.AccessLevel.PRIVATE;
 
@@ -46,7 +47,7 @@ public class WalletEntity {
     @Column
     private boolean isDeleted;
 
-    @OneToOne(optional = false)
+    @OneToOne(optional = false, cascade = ALL)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private UserEntity user;
 
