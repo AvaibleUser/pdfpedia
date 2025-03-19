@@ -44,21 +44,35 @@ public class MagazineServiceTest {
     private TagRepository tagRepository;
 
     @InjectMocks
-    private MagazineService service;
+    private MagazineService magazineService;
 
     @Test
     void canFindEditorMagazines() {
         // given
         long editorId = 71L;
         List<MagazinePreviewDto> expectedMagazines = List.of(
-                mock(MagazinePreviewDto.class),
-                mock(MagazinePreviewDto.class));
+                MagazinePreviewDto.builder()
+                        .id(1L)
+                        .title("amazing title")
+                        .description("yeah an amazing description")
+                        .editorUsername("that editor")
+                        .categoryName("amazing")
+                        .tagsName(Set.of("that", "amazing"))
+                        .build(),
+                MagazinePreviewDto.builder()
+                        .id(2L)
+                        .title("not so amazing title")
+                        .description("another amazing description")
+                        .editorUsername("not that editor")
+                        .categoryName("worse")
+                        .tagsName(Set.of("not", "not that bad"))
+                        .build());
 
         given(magazineRepository.findAllByIsDeletedAndEditorId(false, editorId, MagazinePreviewDto.class))
                 .willReturn(expectedMagazines);
 
         // when
-        List<MagazinePreviewDto> actualMagazines = service.findEditorMagazines(editorId);
+        List<MagazinePreviewDto> actualMagazines = magazineService.findEditorMagazines(editorId);
 
         // then
         BDDAssertions.then(actualMagazines)
@@ -109,7 +123,7 @@ public class MagazineServiceTest {
                 .build();
 
         // when
-        service.saveMagazine(editorId, inMagazine);
+        magazineService.saveMagazine(editorId, inMagazine);
 
         // then
         then(userRepository).should().existsById(editorId);
@@ -139,7 +153,8 @@ public class MagazineServiceTest {
                 .build();
 
         // when
-        RuntimeException actualException = catchRuntimeException(() -> service.saveMagazine(editorId, inMagazine));
+        RuntimeException actualException = catchRuntimeException(
+                () -> magazineService.saveMagazine(editorId, inMagazine));
 
         // then
         then(userRepository).should().existsById(editorId);
@@ -167,7 +182,8 @@ public class MagazineServiceTest {
                 .tagIds(tagIds)
                 .build();
 
-        RuntimeException actualException = catchRuntimeException(() -> service.saveMagazine(editorId, inMagazine));
+        RuntimeException actualException = catchRuntimeException(
+                () -> magazineService.saveMagazine(editorId, inMagazine));
 
         // then
         then(categoryRepository).should().existsById(categoryId);
@@ -197,7 +213,8 @@ public class MagazineServiceTest {
                 .build();
 
         // when
-        RuntimeException actualException = catchRuntimeException(() -> service.saveMagazine(editorId, inMagazine));
+        RuntimeException actualException = catchRuntimeException(
+                () -> magazineService.saveMagazine(editorId, inMagazine));
 
         // then
         then(tagRepository).should().existsAllByIdIn(refEq(tagIds));

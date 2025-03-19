@@ -1,5 +1,7 @@
 package org.cunoc.pdfpedia.controller.magazine;
 
+import java.util.List;
+
 import org.cunoc.pdfpedia.domain.dto.magazine.AddMagazineDto;
 import org.cunoc.pdfpedia.service.magazine.MagazineService;
 import org.junit.jupiter.api.Test;
@@ -22,7 +24,16 @@ public class MagazineControllerTest {
     void canCreateMagazine() {
         // given
         long editorId = 501L;
-        AddMagazineDto expectedMagazine = AddMagazineDto.builder().build();
+        AddMagazineDto expectedMagazine = AddMagazineDto.builder()
+                .title("amazing title")
+                .description("yeah an amazing description")
+                .adBlockingExpirationDate(null)
+                .disableLikes(false)
+                .disableComments(false)
+                .disableSuscriptions(false)
+                .categoryId(150L)
+                .tagIds(List.of(10L, 40L))
+                .build();
 
         // when
         magazineController.createMagazine(editorId, expectedMagazine);
