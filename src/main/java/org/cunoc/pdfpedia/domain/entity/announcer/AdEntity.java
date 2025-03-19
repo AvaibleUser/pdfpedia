@@ -36,7 +36,7 @@ public class AdEntity {
     private ChargePeriodAdEntity chargePeriodAd;
 
     @NonNull
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, length = 500)
     private String content;
 
     @Column(name = "image_url", length = 255)

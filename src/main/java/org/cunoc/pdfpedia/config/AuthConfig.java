@@ -55,7 +55,11 @@ public class AuthConfig {
                 .sessionManagement(s -> s.sessionCreationPolicy(STATELESS))
                 .userDetailsService(userDetailsService)
                 .authorizeHttpRequests(a -> a
-                        .requestMatchers("/v1/auth/**").permitAll()
+                        .requestMatchers("/v1/auth/**",
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v1/announcers/charge-period-ads").permitAll()
                         .requestMatchers("/v1/**").authenticated()
                         .anyRequest().permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2
