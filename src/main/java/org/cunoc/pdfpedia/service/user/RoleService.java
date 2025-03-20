@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class RoleService {
+public class RoleService implements IRoleService {
 
     private final RoleRepository roleRepository;
 

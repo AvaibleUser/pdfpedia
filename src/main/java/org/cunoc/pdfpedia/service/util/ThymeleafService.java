@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class TemplateService {
+public class ThymeleafService implements ITemplateService {
 
     private final SpringTemplateEngine templateEngine;
 
