@@ -1,5 +1,7 @@
 package org.cunoc.pdfpedia.domain.dto.announcer;
 
+import org.cunoc.pdfpedia.domain.type.AdType;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 
@@ -11,6 +13,7 @@ public record AdDto(
         String imageUrl,
         String videoUrl,
         Instant createdAt,
-        LocalDateTime expiresAt
+        LocalDateTime expiresAt,
+        AdType adType
 ) {
 }

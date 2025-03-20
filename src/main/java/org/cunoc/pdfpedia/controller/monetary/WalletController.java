@@ -2,7 +2,6 @@ package org.cunoc.pdfpedia.controller.monetary;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.cunoc.pdfpedia.domain.dto.announcer.ChargePeriodAdDto;
 import org.cunoc.pdfpedia.domain.dto.monetary.WalletDto;
 import org.cunoc.pdfpedia.service.monetary.WalletService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
@@ -22,7 +21,7 @@ public class WalletController {
 
     @PutMapping("/{id}")
     public ResponseEntity<WalletDto> update(@PathVariable Long id, @Valid @RequestBody WalletDto dto) {
-        return ResponseEntity.ok(this.walletService.update(id, dto));
+        return ResponseEntity.ok(this.walletService.updateIncrease(id, dto));
     }
 
 

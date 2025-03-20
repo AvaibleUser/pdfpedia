@@ -21,7 +21,7 @@ public class MapperAd {
                 .content(adPostDto.content())
                 .imageUrl(adPostDto.imageUrl())
                 .videoUrl(adPostDto.videoUrl())
-                .expiresAt(LocalDateTime.now().plusDays(Integer.parseInt(adPostDto.duration())))
+                .expiresAt(LocalDateTime.now().plusDays(chargePeriodAd.getDurationDays())) // calcula dias para que expire el anuncio
                 .isDeleted(false)
                 .build();
     }
@@ -35,7 +35,8 @@ public class MapperAd {
                 adEntity.getImageUrl(),
                 adEntity.getVideoUrl(),
                 adEntity.getCreatedAt(),
-                adEntity.getExpiresAt()
+                adEntity.getExpiresAt(),
+                adEntity.getChargePeriodAd().getAdType()
         );
     }
 

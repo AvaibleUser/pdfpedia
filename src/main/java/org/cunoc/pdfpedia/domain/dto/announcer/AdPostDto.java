@@ -8,8 +8,6 @@ public record AdPostDto(
         @Positive @NotNull Long chargePeriodAd,
         @NotBlank String content,
         @NotBlank String imageUrl,
-        @NotBlank String videoUrl,
-        @NotBlank String duration
-
+        @NotBlank String videoUrl
 ) {
 }

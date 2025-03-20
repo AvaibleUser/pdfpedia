@@ -13,7 +13,12 @@ import org.cunoc.pdfpedia.domain.utils.MapperAd;
 import org.cunoc.pdfpedia.repository.announcer.AdRepository;
 import org.cunoc.pdfpedia.repository.announcer.ChargePeriodAdRepository;
 import org.cunoc.pdfpedia.repository.user.UserRepository;
+import org.cunoc.pdfpedia.service.monetary.PaymentService;
+import org.cunoc.pdfpedia.service.monetary.WalletService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
@@ -23,17 +28,28 @@ public class AdService {
     private final UserRepository userRepository;
     private final ChargePeriodAdRepository chargePeriodAdRepository;
     private final MapperAd mapperAd;
+    private final WalletService walletService;
+    private final PaymentService paymentService;
 
+    @Transactional
     public AdDto create(@Valid AdPostDto adPostDto, Long advertiserId) {
         UserEntity advertiser = userRepository.findById(advertiserId)
-                .orElseThrow(() -> new ValueNotFoundException("usuarios no encontrado al realizar una publicacion de anuncio"));
+                .orElseThrow(() -> new ValueNotFoundException("Usuario no encontrado al realizar una publicación de anuncio"));
 
         ChargePeriodAdEntity chargePeriodAd = chargePeriodAdRepository.findById(adPostDto.chargePeriodAd())
-                .orElseThrow(() -> new ValueNotFoundException("Periodo de vigencia no valido al realizar una publicacion de anuncio"));
+                .orElseThrow(() -> new ValueNotFoundException("Periodo de vigencia no válido al realizar una publicación de anuncio"));
 
         AdEntity entity = mapperAd.toEntity(adPostDto, advertiser, chargePeriodAd);
+
+        // Descontar de cartera digital, validar si le alcanza el saldo
+        this.walletService.updateDecrease(advertiserId, chargePeriodAd.getCost());
+
         AdEntity savedEntity = adRepository.save(entity);
+
+        //registrar el pago
+        this.paymentService.createPaymentPostAd(chargePeriodAd.getCost(),savedEntity);
 
         return mapperAd.toDto(savedEntity);
     }
+
 }
