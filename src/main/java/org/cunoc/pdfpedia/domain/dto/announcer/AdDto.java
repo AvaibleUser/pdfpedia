@@ -8,12 +8,12 @@ import java.time.LocalDateTime;
 public record AdDto(
         Long id,
         Long advertiser,
-        Long chargePeriodAd,
         String content,
         String imageUrl,
         String videoUrl,
         Instant createdAt,
         LocalDateTime expiresAt,
-        AdType adType
+        boolean isActive,
+        ChargePeriodAdDto changePeriodAd
 ) {
 }
