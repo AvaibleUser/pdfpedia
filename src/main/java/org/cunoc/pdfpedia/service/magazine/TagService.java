@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class TagService {
+public class TagService implements ITagService {
 
     private final TagRepository tagRepository;
 

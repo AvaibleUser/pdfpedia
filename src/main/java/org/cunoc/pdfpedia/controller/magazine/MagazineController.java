@@ -3,7 +3,7 @@ package org.cunoc.pdfpedia.controller.magazine;
 import static org.springframework.http.HttpStatus.CREATED;
 
 import org.cunoc.pdfpedia.domain.dto.magazine.AddMagazineDto;
-import org.cunoc.pdfpedia.service.magazine.MagazineService;
+import org.cunoc.pdfpedia.service.magazine.IMagazineService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MagazineController {
 
-    private final MagazineService magazineService;
+    private final IMagazineService magazineService;
 
     @PostMapping
     @RolesAllowed("EDITOR")

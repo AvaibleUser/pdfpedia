@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class MagazineService {
+public class MagazineService implements IMagazineService {
 
     private final UserRepository userRepository;
     private final MagazineRepository magazineRepository;

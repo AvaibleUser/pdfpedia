@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class CategoryService {
+public class CategoryService implements ICategoryService {
 
     private final CategoryRepository categoryRepository;
 
