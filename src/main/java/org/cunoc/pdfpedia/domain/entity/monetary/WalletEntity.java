@@ -25,6 +25,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Entity(name = "wallet")
 @Table(name = "wallet", schema = "monetary_control")
@@ -47,6 +48,7 @@ public class WalletEntity {
     @Column
     private boolean isDeleted;
 
+    @ToString.Exclude
     @OneToOne(optional = false, cascade = ALL)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private UserEntity user;

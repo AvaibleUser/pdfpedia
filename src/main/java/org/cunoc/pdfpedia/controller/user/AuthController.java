@@ -14,11 +14,11 @@ import org.cunoc.pdfpedia.domain.dto.user.ConfirmUserDto;
 import org.cunoc.pdfpedia.domain.dto.user.UserDto;
 import org.cunoc.pdfpedia.domain.exception.FailedAuthenticateException;
 import org.cunoc.pdfpedia.domain.exception.RequestConflictException;
-import org.cunoc.pdfpedia.service.user.AuthCodesService;
-import org.cunoc.pdfpedia.service.user.UserService;
-import org.cunoc.pdfpedia.service.util.EmailService;
-import org.cunoc.pdfpedia.service.util.TemplateService;
-import org.cunoc.pdfpedia.service.util.TokenService;
+import org.cunoc.pdfpedia.service.user.ICodesService;
+import org.cunoc.pdfpedia.service.user.IUserService;
+import org.cunoc.pdfpedia.service.util.IEmailService;
+import org.cunoc.pdfpedia.service.util.ITemplateService;
+import org.cunoc.pdfpedia.service.util.ITokenService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,12 +37,12 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final UserService userService;
-    private final TokenService tokenService;
-    private final AuthCodesService codesService;
-    private final EmailService emailService;
-    private final TemplateService templateRendererService;
-    private final AuthenticationManager autheManager;
+    private final IUserService userService;
+    private final ITokenService tokenService;
+    private final ICodesService codesService;
+    private final IEmailService emailService;
+    private final ITemplateService templateRendererService;
+    private final AuthenticationManager authManager;
 
     private TokenDto toTokenDto(UserDto user) {
         String token = tokenService.generateToken(user.id(), List.of(user.roleName()));
@@ -52,9 +52,9 @@ public class AuthController {
     @PostMapping("/sign-up")
     @ResponseStatus(CREATED)
     public void signUp(@RequestBody @Valid AddUserDto user) {
-        userService.registerUser(user);
+        userService.registerUser(user, true);
 
-        String code = codesService.generateEmailConfirmationCode(user.email());
+        String code = codesService.generateConfirmCode(user.email());
         Map<String, Object> templateVariables = Map.of("code", code.toCharArray(), "user", user);
         String confirmationHtml = templateRendererService.renderTemplate("sign-up-confirmation", templateVariables);
 
@@ -64,11 +64,12 @@ public class AuthController {
         } catch (MessagingException e) {
             throw new RequestConflictException("No se pudo enviar el correo de confirmacion");
         }
+        userService.registerUser(user, false);
     }
 
     @PutMapping("/sign-up")
     public TokenDto confirmSignUp(@RequestBody @Valid ConfirmUserDto user) {
-        boolean confirmed = codesService.confirmUserEmailCode(user.email(),
+        boolean confirmed = codesService.confirmCode(user.email(),
                 user.code());
         if (!confirmed) {
             throw new FailedAuthenticateException("No se pudo confirmar la cuenta");
@@ -82,7 +83,7 @@ public class AuthController {
     @PostMapping("/sign-in")
     public Optional<TokenDto> signIn(@RequestBody @Valid AuthUserDto user) {
         var authenticableUser = unauthenticated(user.email(), user.password());
-        autheManager.authenticate(authenticableUser);
+        authManager.authenticate(authenticableUser);
 
         return userService.findUserByEmail(user.email())
                 .map(this::toTokenDto);

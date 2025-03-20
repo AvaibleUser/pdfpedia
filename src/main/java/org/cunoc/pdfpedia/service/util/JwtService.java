@@ -13,20 +13,20 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class TokenService {
+public class JwtService implements ITokenService {
 
     private final JwtEncoder jwtEncoder;
     private final TokenProperty tokenProperty;
 
-    public <T> String generateToken(long id, Collection<T> authorities) {
+    public <T> String generateToken(long userId, Collection<T> roles) {
         Instant now = Instant.now();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
                 .expiresAt(now.plus(tokenProperty.expirationTime(), tokenProperty.timeUnit()))
-                .subject(String.valueOf(id))
-                .claim("role", authorities)
+                .subject(String.valueOf(userId))
+                .claim("role", roles)
                 .build();
 
         return jwtEncoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();

@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class EmailService {
+public class JavaMailService implements IEmailService {
 
     private final JavaMailSender mailSender;
 
@@ -31,8 +31,7 @@ public class EmailService {
     }
 
     public void sendHtmlEmail(String companyName, String toEmail, String subject, String htmlContent,
-            File... attachments)
-            throws MessagingException {
+            File... attachments) throws MessagingException {
         MimeMessage message = mailSender.createMimeMessage();
 
         if (!isEmpty(attachments)) {

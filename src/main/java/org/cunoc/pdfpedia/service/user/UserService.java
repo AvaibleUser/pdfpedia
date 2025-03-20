@@ -13,7 +13,6 @@ import org.cunoc.pdfpedia.domain.exception.RequestConflictException;
 import org.cunoc.pdfpedia.repository.user.RoleRepository;
 import org.cunoc.pdfpedia.repository.user.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,7 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class UserService implements UserDetailsService {
+public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
@@ -40,12 +39,15 @@ public class UserService implements UserDetailsService {
     }
 
     @Transactional
-    public void registerUser(AddUserDto user) {
+    public void registerUser(AddUserDto user, boolean dryRun) {
         if (userRepository.existsByEmail(user.email())) {
             throw new RequestConflictException("El email que se intenta registrar ya esta en uso");
         }
         if (!roleRepository.existsById(user.roleId())) {
             throw new RequestConflictException("El rol que se intenta registrar no existe");
+        }
+        if (dryRun) {
+            return;
         }
         String encryptedPassword = encoder.encode(user.password());
         RoleEntity role = roleRepository.findById(user.roleId()).get();
