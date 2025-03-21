@@ -12,23 +12,23 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class AuthCodesService {
+public class TotpService implements ICodesService {
 
     private final GoogleAuthenticator googleAuth;
     private final ConcurrentMap<String, String> emailConfirmationCodes;
 
-    public String generateEmailConfirmationCode(String email) {
+    public String generateConfirmCode(String email) {
         GoogleAuthenticatorKey credentials = googleAuth.createCredentials();
         String code = String.format("%06d", googleAuth.getTotpPassword(credentials.getKey()));
         emailConfirmationCodes.put(email, code);
         return code;
     }
 
-    public boolean confirmUserEmailCode(String email, String code) {
+    public boolean confirmCode(String email, String code) {
         return emailConfirmationCodes.remove(email, code);
     }
 
-    public boolean existsUserEmailCode(String email, String code) {
+    public boolean existsCode(String email, String code) {
         return Objects.equals(emailConfirmationCodes.get(email), code);
     }
 }

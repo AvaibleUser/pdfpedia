@@ -22,6 +22,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Entity(name = "role")
 @Table(name = "role", schema = "user_control")
@@ -41,6 +42,7 @@ public class RoleEntity {
     @Column(nullable = false, unique = true)
     private String name;
 
+    @ToString.Exclude
     @OneToMany(mappedBy = "role")
     private Set<UserEntity> users;
 

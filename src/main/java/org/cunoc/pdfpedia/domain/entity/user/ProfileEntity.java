@@ -23,6 +23,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
 @Entity(name = "profile")
 @Table(name = "profile", schema = "user_control")
@@ -55,6 +56,7 @@ public class ProfileEntity {
     @Column
     private String interestsTopics;
 
+    @ToString.Exclude
     @OneToOne(optional = false, cascade = ALL)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private UserEntity user;
