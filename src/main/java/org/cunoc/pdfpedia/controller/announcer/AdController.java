@@ -2,10 +2,7 @@ package org.cunoc.pdfpedia.controller.announcer;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.cunoc.pdfpedia.domain.dto.announcer.AdDto;
-import org.cunoc.pdfpedia.domain.dto.announcer.AdPostDto;
-import org.cunoc.pdfpedia.domain.dto.announcer.AdUpdateDto;
-import org.cunoc.pdfpedia.domain.dto.announcer.TotalAdsDto;
+import org.cunoc.pdfpedia.domain.dto.announcer.*;
 import org.cunoc.pdfpedia.service.announcer.AdService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
 import org.springframework.http.HttpStatus;
@@ -51,6 +48,11 @@ public class AdController {
     @GetMapping("/count-ads-userId")
     public ResponseEntity<TotalAdsDto> getTotalAdsByUserId(@CurrentUserId long userId){
         return ResponseEntity.status(HttpStatus.OK).body(this.adService.totalAdsByUserId(userId));
+    }
+
+    @GetMapping("post-count-mount")
+    public ResponseEntity<List<PostAdMount>> getAllPostAdMount(@CurrentUserId long userId){
+        return ResponseEntity.status(HttpStatus.OK).body(this.adService.getPostMount(userId));
     }
 
 }

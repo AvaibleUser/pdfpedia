@@ -3,10 +3,7 @@ package org.cunoc.pdfpedia.service.announcer;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.cunoc.pdfpedia.domain.dto.announcer.AdDto;
-import org.cunoc.pdfpedia.domain.dto.announcer.AdPostDto;
-import org.cunoc.pdfpedia.domain.dto.announcer.AdUpdateDto;
-import org.cunoc.pdfpedia.domain.dto.announcer.TotalAdsDto;
+import org.cunoc.pdfpedia.domain.dto.announcer.*;
 import org.cunoc.pdfpedia.domain.entity.announcer.AdEntity;
 import org.cunoc.pdfpedia.domain.entity.announcer.ChargePeriodAdEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
@@ -115,6 +112,10 @@ public class AdService {
     public TotalAdsDto totalAdsByUserId(Long userId) {
         return new TotalAdsDto(this.adRepository.countAllByAdvertiserId(userId)
                 , this.adRepository.countAllByAdvertiserIdAndIsActiveTrue(userId));
+    }
+
+    public List<PostAdMount> getPostMount(Long userId) {
+        return adRepository.countAdsByMonth(userId);
     }
 
 

@@ -3,11 +3,13 @@ package org.cunoc.pdfpedia.domain.entity.announcer;
 import jakarta.persistence.*;
 import lombok.*;
 
+import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
+import java.util.Set;
 
 import static lombok.AccessLevel.PRIVATE;
 
@@ -58,5 +60,8 @@ public class AdEntity {
 
     @Column(name = "is_deleted")
     private boolean isDeleted;
+
+    @OneToMany(mappedBy = "ad")
+    private Set<AdViewsEntity> viewAds;
 
 }
