@@ -33,10 +33,10 @@ public class AdEntity {
     @NonNull
     @ManyToOne(optional = false)
     @JoinColumn(name = "ad_type", nullable = false)
-    private ChargePeriodAd chargePeriodAd;
+    private ChargePeriodAdEntity chargePeriodAd;
 
     @NonNull
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(nullable = false, length = 500)
     private String content;
 
     @Column(name = "image_url", length = 255)
@@ -52,6 +52,9 @@ public class AdEntity {
     @NonNull
     @Column(name = "expires_at", nullable = false)
     private LocalDateTime expiresAt;
+
+    @Column(name = "is_active")
+    private boolean isActive = true;
 
     @Column(name = "is_deleted")
     private boolean isDeleted;

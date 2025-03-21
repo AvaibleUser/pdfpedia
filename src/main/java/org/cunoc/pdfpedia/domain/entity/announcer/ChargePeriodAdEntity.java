@@ -19,7 +19,7 @@ import static lombok.AccessLevel.PRIVATE;
 @NoArgsConstructor
 @RequiredArgsConstructor
 @AllArgsConstructor(access = PRIVATE)
-public class ChargePeriodAd {
+public class ChargePeriodAdEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

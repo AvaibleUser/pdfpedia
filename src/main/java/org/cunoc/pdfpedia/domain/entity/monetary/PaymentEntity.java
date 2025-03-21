@@ -26,6 +26,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 @Entity(name = "payment")
 @Table(name = "payment", schema = "monetary_control")
@@ -61,8 +62,7 @@ public class PaymentEntity {
     @JoinColumn(name = "magazine_id")
     private MagazineEntity magazine;
 
-    // @CreationTimestamp
-    @NonNull
+    @CreationTimestamp
     @Column(nullable = false)
     private Instant paidAt;
 }

@@ -1,8 +1,7 @@
 package org.cunoc.pdfpedia.domain.type;
 
 public enum AdType {
-
-    BANNER,
+    TEXT_IMAGE,
     VIDEO,
     TEXT
 }
