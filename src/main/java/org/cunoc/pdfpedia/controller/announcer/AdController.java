@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.AdDto;
 import org.cunoc.pdfpedia.domain.dto.announcer.AdPostDto;
 import org.cunoc.pdfpedia.domain.dto.announcer.AdUpdateDto;
+import org.cunoc.pdfpedia.domain.dto.announcer.TotalAdsDto;
 import org.cunoc.pdfpedia.service.announcer.AdService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,6 @@ import java.util.List;
 public class AdController {
 
     private final AdService adService;
-
 
     @PostMapping()
     public ResponseEntity<AdDto> createAd(@Valid @RequestBody AdPostDto adPostDto, @CurrentUserId long userId){
@@ -47,4 +47,10 @@ public class AdController {
     public ResponseEntity<AdDto> update(@PathVariable long id, @Valid @RequestBody AdUpdateDto adUpdateDto){
         return ResponseEntity.status(HttpStatus.OK).body(this.adService.update(id, adUpdateDto));
     }
+
+    @GetMapping("/count-ads-userId")
+    public ResponseEntity<TotalAdsDto> getTotalAdsByUserId(@CurrentUserId long userId){
+        return ResponseEntity.status(HttpStatus.OK).body(this.adService.totalAdsByUserId(userId));
+    }
+
 }

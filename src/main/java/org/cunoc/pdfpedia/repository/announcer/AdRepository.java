@@ -10,5 +10,6 @@ import java.util.List;
 public interface AdRepository extends JpaRepository<AdEntity, Long> {
 
     List<AdEntity> findAllByAdvertiserIdOrderByExpiresAtDesc(Long id);
-
+    Integer countAllByAdvertiserId(Long id);
+    Integer countAllByAdvertiserIdAndActiveTrue(Long id);
 }

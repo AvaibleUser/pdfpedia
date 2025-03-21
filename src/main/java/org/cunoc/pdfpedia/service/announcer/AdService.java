@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.AdDto;
 import org.cunoc.pdfpedia.domain.dto.announcer.AdPostDto;
 import org.cunoc.pdfpedia.domain.dto.announcer.AdUpdateDto;
+import org.cunoc.pdfpedia.domain.dto.announcer.TotalAdsDto;
 import org.cunoc.pdfpedia.domain.entity.announcer.AdEntity;
 import org.cunoc.pdfpedia.domain.entity.announcer.ChargePeriodAdEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
@@ -49,7 +50,7 @@ public class AdService {
         AdEntity savedEntity = adRepository.save(entity);
 
         //registrar el pago
-        this.paymentService.createPaymentPostAd(chargePeriodAd.getCost(),savedEntity);
+        this.paymentService.createPaymentPostAd(chargePeriodAd.getCost(), savedEntity);
 
         return mapperAd.toDto(savedEntity);
     }
@@ -91,14 +92,14 @@ public class AdService {
         AdEntity savedEntity = adRepository.save(exit);
 
         //registrar el pago
-        this.paymentService.createPaymentPostAd(chargePeriodAd.getCost(),savedEntity);
+        this.paymentService.createPaymentPostAd(chargePeriodAd.getCost(), savedEntity);
 
         return mapperAd.toDto(savedEntity);
 
     }
 
     @Transactional
-    public AdDto update(Long adId, @Valid AdUpdateDto adUpdateDto){
+    public AdDto update(Long adId, @Valid AdUpdateDto adUpdateDto) {
         AdEntity exist = this.adRepository.findById(adId).
                 orElseThrow(() -> new ValueNotFoundException("Anuncio no encontrado para activar"));
 
@@ -110,5 +111,11 @@ public class AdService {
 
         return mapperAd.toDto(savedEntity);
     }
+
+    public TotalAdsDto totalAdsByUserId(Long userId) {
+        return new TotalAdsDto(this.adRepository.countAllByAdvertiserId(userId)
+                , this.adRepository.countAllByAdvertiserIdAndActiveTrue(userId));
+    }
+
 
 }
