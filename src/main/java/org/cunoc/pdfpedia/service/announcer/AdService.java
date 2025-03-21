@@ -114,7 +114,7 @@ public class AdService {
 
     public TotalAdsDto totalAdsByUserId(Long userId) {
         return new TotalAdsDto(this.adRepository.countAllByAdvertiserId(userId)
-                , this.adRepository.countAllByAdvertiserIdAndActiveTrue(userId));
+                , this.adRepository.countAllByAdvertiserIdAndIsActiveTrue(userId));
     }
 
 
