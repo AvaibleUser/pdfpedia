@@ -5,10 +5,12 @@ import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.*;
 import org.cunoc.pdfpedia.service.announcer.AdService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -27,6 +29,15 @@ public class AdController {
     @GetMapping("/my-ads")
     public ResponseEntity<List<AdDto>> getMyAds(@CurrentUserId long userId){
         List<AdDto> list = this.adService.findAllByUserId(userId);
+        return ResponseEntity.status(HttpStatus.OK).body(list);
+    }
+
+    @GetMapping("/my-ads-active")
+    public ResponseEntity<List<AdDto>> getMyAdsActive(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @CurrentUserId long userId){
+        List<AdDto> list = this.adService.findAllActiveByUserId(startDate, endDate, userId);
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 

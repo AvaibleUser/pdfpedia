@@ -17,6 +17,7 @@ import org.cunoc.pdfpedia.service.monetary.WalletService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -59,6 +60,22 @@ public class AdService {
                 .map(this.mapperAd::toDto)
                 .toList();
     }
+
+    public List<AdDto> findAllActiveByUserId(LocalDate startDate, LocalDate endDate, Long userId) {
+        if (startDate == null && endDate == null){
+            return this.adRepository.findAllByAdvertiserIdAndIsActiveTrueOrderByExpiresAtDesc(userId)
+                    .stream()
+                    .map(this.mapperAd::toDto)
+                    .toList();
+        }
+        return this.adRepository.findAllByAdvertiserIdAndIsActiveTrueAndCreatedAtBetweenOrderByExpiresAtDesc(userId, startDate, endDate)
+                .stream()
+                .map(this.mapperAd::toDto)
+                .toList();
+
+    }
+
+
 
     @Transactional
     public AdDto updateDeactivated(Long adId) {

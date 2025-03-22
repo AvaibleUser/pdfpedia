@@ -3,6 +3,7 @@ package org.cunoc.pdfpedia.service.announcer;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.ChargePeriodAdDto;
+import org.cunoc.pdfpedia.domain.dto.announcer.CountAdByTypeDto;
 import org.cunoc.pdfpedia.domain.entity.announcer.ChargePeriodAdEntity;
 import org.cunoc.pdfpedia.domain.exception.ValueNotFoundException;
 import org.cunoc.pdfpedia.repository.announcer.ChargePeriodAdRepository;
@@ -46,6 +47,10 @@ public class ChargePeriodAdService {
 
         ChargePeriodAdEntity updatedEntity = chargePeriodAdRepository.save(existingEntity);
         return this.toDto(updatedEntity);
+    }
+
+    public List<CountAdByTypeDto> getAdCountsByTypeForUser(Long advertiserId) {
+        return chargePeriodAdRepository.countAdsByTypeForUser(advertiserId);
     }
 
 }
