@@ -1,7 +1,9 @@
 package org.cunoc.pdfpedia.domain.dto.magazine;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -13,7 +15,7 @@ import lombok.Builder;
 public record AddMagazineDto(
         @NotBlank String title,
         @NotBlank String description,
-        Instant adBlockingExpirationDate,
+        @JsonFormat(pattern = "yyyy-MM-dd") LocalDate adBlockingExpirationDate,
         boolean disableLikes,
         boolean disableComments,
         boolean disableSuscriptions,

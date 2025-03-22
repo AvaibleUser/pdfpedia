@@ -5,6 +5,7 @@ import static lombok.AccessLevel.PRIVATE;
 
 import java.math.BigDecimal;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Set;
 
 import org.cunoc.pdfpedia.domain.entity.interaction.CommentEntity;
@@ -57,7 +58,7 @@ public class MagazineEntity {
     private BigDecimal costPerDay;
 
     @Column
-    private Instant adBlockingExpirationDate;
+    private LocalDate adBlockingExpirationDate;
 
     @Column
     private boolean disableLikes;
