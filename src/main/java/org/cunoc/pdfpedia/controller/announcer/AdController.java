@@ -2,16 +2,15 @@ package org.cunoc.pdfpedia.controller.announcer;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.cunoc.pdfpedia.domain.dto.announcer.AdDto;
-import org.cunoc.pdfpedia.domain.dto.announcer.AdPostDto;
-import org.cunoc.pdfpedia.domain.dto.announcer.AdUpdateDto;
-import org.cunoc.pdfpedia.domain.dto.announcer.TotalAdsDto;
+import org.cunoc.pdfpedia.domain.dto.announcer.*;
 import org.cunoc.pdfpedia.service.announcer.AdService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -33,6 +32,15 @@ public class AdController {
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
+    @GetMapping("/my-ads-active")
+    public ResponseEntity<List<AdDto>> getMyAdsActive(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @CurrentUserId long userId){
+        List<AdDto> list = this.adService.findAllActiveByUserId(startDate, endDate, userId);
+        return ResponseEntity.status(HttpStatus.OK).body(list);
+    }
+
     @PutMapping("/deactivate/{id}")
     public ResponseEntity<AdDto> deactivateAd(@PathVariable long id){
         return ResponseEntity.status(HttpStatus.OK).body(this.adService.updateDeactivated(id));
@@ -51,6 +59,11 @@ public class AdController {
     @GetMapping("/count-ads-userId")
     public ResponseEntity<TotalAdsDto> getTotalAdsByUserId(@CurrentUserId long userId){
         return ResponseEntity.status(HttpStatus.OK).body(this.adService.totalAdsByUserId(userId));
+    }
+
+    @GetMapping("post-count-mount")
+    public ResponseEntity<List<PostAdMount>> getAllPostAdMount(@CurrentUserId long userId){
+        return ResponseEntity.status(HttpStatus.OK).body(this.adService.getPostMount(userId));
     }
 
 }

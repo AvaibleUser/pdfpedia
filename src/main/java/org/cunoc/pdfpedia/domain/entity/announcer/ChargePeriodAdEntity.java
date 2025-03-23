@@ -41,7 +41,4 @@ public class ChargePeriodAdEntity {
     @OneToMany(mappedBy = "chargePeriodAd")
     private Set<AdEntity> ads;
 
-
-
-
 }

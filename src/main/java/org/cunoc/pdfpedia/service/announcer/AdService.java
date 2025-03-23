@@ -3,10 +3,7 @@ package org.cunoc.pdfpedia.service.announcer;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.cunoc.pdfpedia.domain.dto.announcer.AdDto;
-import org.cunoc.pdfpedia.domain.dto.announcer.AdPostDto;
-import org.cunoc.pdfpedia.domain.dto.announcer.AdUpdateDto;
-import org.cunoc.pdfpedia.domain.dto.announcer.TotalAdsDto;
+import org.cunoc.pdfpedia.domain.dto.announcer.*;
 import org.cunoc.pdfpedia.domain.entity.announcer.AdEntity;
 import org.cunoc.pdfpedia.domain.entity.announcer.ChargePeriodAdEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
@@ -20,6 +17,7 @@ import org.cunoc.pdfpedia.service.monetary.WalletService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -61,6 +59,20 @@ public class AdService {
                 .stream()
                 .map(this.mapperAd::toDto)
                 .toList();
+    }
+
+    public List<AdDto> findAllActiveByUserId(LocalDate startDate, LocalDate endDate, Long userId) {
+        if (startDate == null && endDate == null){
+            return this.adRepository.findAllByAdvertiserIdAndIsActiveTrueOrderByExpiresAtDesc(userId)
+                    .stream()
+                    .map(this.mapperAd::toDto)
+                    .toList();
+        }
+        return this.adRepository.findAllByAdvertiserIdAndIsActiveTrueAndCreatedAtBetweenOrderByExpiresAtDesc(userId, startDate, endDate)
+                .stream()
+                .map(this.mapperAd::toDto)
+                .toList();
+
     }
 
     @Transactional
@@ -117,5 +129,8 @@ public class AdService {
                 , this.adRepository.countAllByAdvertiserIdAndIsActiveTrue(userId));
     }
 
+    public List<PostAdMount> getPostMount(Long userId) {
+        return adRepository.countAdsByMonth(userId);
+    }
 
 }
