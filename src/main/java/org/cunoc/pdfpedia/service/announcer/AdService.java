@@ -75,8 +75,6 @@ public class AdService {
 
     }
 
-
-
     @Transactional
     public AdDto updateDeactivated(Long adId) {
         AdEntity exit = this.adRepository.findById(adId).
@@ -134,6 +132,5 @@ public class AdService {
     public List<PostAdMount> getPostMount(Long userId) {
         return adRepository.countAdsByMonth(userId);
     }
-
 
 }
