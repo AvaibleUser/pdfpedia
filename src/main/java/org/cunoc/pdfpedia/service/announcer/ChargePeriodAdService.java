@@ -19,7 +19,7 @@ public class ChargePeriodAdService {
 
     private final ChargePeriodAdRepository chargePeriodAdRepository;
 
-    private ChargePeriodAdDto toDto(ChargePeriodAdEntity chargePeriodAdEntity) {
+    public ChargePeriodAdDto toDto(ChargePeriodAdEntity chargePeriodAdEntity) {
         return new ChargePeriodAdDto(
                 chargePeriodAdEntity.getId(),
                 chargePeriodAdEntity.getAdType(),

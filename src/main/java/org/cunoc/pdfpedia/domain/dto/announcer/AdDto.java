@@ -1,7 +1,5 @@
 package org.cunoc.pdfpedia.domain.dto.announcer;
 
-import lombok.Builder;
-import org.cunoc.pdfpedia.domain.type.AdType;
 
 import java.time.Instant;
 import java.time.LocalDateTime;

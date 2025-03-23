@@ -16,7 +16,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/v1/announcers/charge-period-ads")
 @RequiredArgsConstructor
-public class chargePeriodAdController {
+public class ChargePeriodAdController {
 
     private final ChargePeriodAdService chargePeriodAdService;
 

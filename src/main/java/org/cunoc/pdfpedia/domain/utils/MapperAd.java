@@ -26,7 +26,7 @@ public class MapperAd {
                 .build();
     }
 
-    private ChargePeriodAdDto toDto(ChargePeriodAdEntity chargePeriodAdEntity) {
+    public ChargePeriodAdDto toDto(ChargePeriodAdEntity chargePeriodAdEntity) {
         return new ChargePeriodAdDto(
                 chargePeriodAdEntity.getId(),
                 chargePeriodAdEntity.getAdType(),
@@ -35,7 +35,7 @@ public class MapperAd {
         );
     }
 
-    private boolean calcActive(boolean active, LocalDateTime expiresAt) {
+    public boolean calcActive(boolean active, LocalDateTime expiresAt) {
         if(!active){
             return false;
         }
