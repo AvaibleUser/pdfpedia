@@ -51,12 +51,12 @@ public class AdViewsService {
         return this.adViewsRepository.countViewsAdsByMonth(userId);
     }
 
-    private List<AdViewReportDto> getReportViewsAll(Long userId){
+    public List<AdViewReportDto> getReportViewsAll(Long userId){
         List<AdEntity> ads = this.adRepository.findByAdvertiser_Id(userId);
         return ads.stream().map(this.mapperAd::adViewsDto).toList();
     }
 
-    private boolean isWithinRange(Instant createdAt, LocalDate startDate, LocalDate endDate) {
+    public boolean isWithinRange(Instant createdAt, LocalDate startDate, LocalDate endDate) {
         LocalDate createdDate = createdAt.atZone(ZoneId.systemDefault()).toLocalDate();
         return (startDate == null || !createdDate.isBefore(startDate)) &&
                 (endDate == null || !createdDate.isAfter(endDate));
