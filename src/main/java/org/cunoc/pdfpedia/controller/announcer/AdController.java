@@ -3,6 +3,8 @@ package org.cunoc.pdfpedia.controller.announcer;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.*;
+import org.cunoc.pdfpedia.domain.dto.dashboard.PostAdMothDto;
+import org.cunoc.pdfpedia.domain.dto.magazine.TopEditorDto;
 import org.cunoc.pdfpedia.service.announcer.AdService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -14,7 +16,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/announcers")
+@RequestMapping("/v1/ads")
 @RequiredArgsConstructor
 public class AdController {
 
@@ -64,6 +66,31 @@ public class AdController {
     @GetMapping("post-count-mount")
     public ResponseEntity<List<PostAdMount>> getAllPostAdMount(@CurrentUserId long userId){
         return ResponseEntity.status(HttpStatus.OK).body(this.adService.getPostMount(userId));
+    }
+
+    @GetMapping("/total-post-ad")
+    public ResponseEntity<TotalTarjertDto> totalPostAd(
+                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                       @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+                                       ){
+
+        return ResponseEntity.status(HttpStatus.OK).body(this.adService.getTotalPostAd(startDate, endDate));
+    }
+
+    @GetMapping("/top-ad-publisher")
+    public ResponseEntity<TopEditorDto> getTopEditorInRange(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(this.adService.getTopPostAd(startDate, endDate));
+    }
+
+    @GetMapping("/count-by-month")
+    public ResponseEntity<List<PostAdMount>> getAdCountsByMonth(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ) {
+        return ResponseEntity.ok(adService.getAdCountsByMonth(startDate, endDate));
     }
 
 }

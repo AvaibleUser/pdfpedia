@@ -4,8 +4,11 @@ package org.cunoc.pdfpedia.service.announcer;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.*;
+import org.cunoc.pdfpedia.domain.dto.dashboard.PostAdMothDto;
+import org.cunoc.pdfpedia.domain.dto.magazine.TopEditorDto;
 import org.cunoc.pdfpedia.domain.entity.announcer.AdEntity;
 import org.cunoc.pdfpedia.domain.entity.announcer.ChargePeriodAdEntity;
+import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
 import org.cunoc.pdfpedia.domain.exception.ValueNotFoundException;
 import org.cunoc.pdfpedia.domain.utils.MapperAd;
@@ -14,11 +17,14 @@ import org.cunoc.pdfpedia.repository.announcer.ChargePeriodAdRepository;
 import org.cunoc.pdfpedia.repository.user.UserRepository;
 import org.cunoc.pdfpedia.service.monetary.PaymentService;
 import org.cunoc.pdfpedia.service.monetary.WalletService;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -131,6 +137,66 @@ public class AdService {
 
     public List<PostAdMount> getPostMount(Long userId) {
         return adRepository.countAdsByMonth(userId);
+    }
+
+    public TotalTarjertDto getTotalPostAd(LocalDate startDate, LocalDate endDate) {
+        if (startDate == null && endDate == null){
+            return TotalTarjertDto
+                    .builder()
+                    .total(this.adRepository.count())
+                    .build();
+        }
+        ZoneId zoneId = ZoneId.systemDefault();
+        Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
+        Instant endInstant = endDate.atStartOfDay(zoneId).toInstant();
+
+        return TotalTarjertDto
+                .builder()
+                .total(this.adRepository.countAllByCreatedAtBetween(startInstant, endInstant))
+                .build();
+    }
+
+    public TopEditorDto getTopPostAd(LocalDate startDate, LocalDate endDate){
+        if (startDate == null && endDate == null){
+            UserEntity editor = this.adRepository
+                    .findAllByIsDeletedFalseOrderByAdvertiser(PageRequest.of(0, 1))
+                    .stream()
+                    .map(AdEntity::getAdvertiser)
+                    .findFirst().orElseThrow(() -> new ValueNotFoundException("No hay registros"));
+
+            return TopEditorDto
+                    .builder()
+                    .userName(editor.getUsername())
+                    .build();
+        }
+
+        ZoneId zoneId = ZoneId.systemDefault();
+        Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
+        Instant endInstant = endDate.atStartOfDay(zoneId).toInstant();
+
+        UserEntity editor = this.adRepository
+                .findAllByIsDeletedFalseAndCreatedAtBetweenOrderByAdvertiser(startInstant, endInstant, PageRequest.of(0, 1))
+                .stream()
+                .map(AdEntity::getAdvertiser)
+                .findFirst().orElseThrow(() -> new ValueNotFoundException("No hay registros"));
+
+        return TopEditorDto
+                .builder()
+                .userName(editor.getUsername())
+                .build();
+    }
+
+    public List<PostAdMount> getAdCountsByMonth(LocalDate startDate, LocalDate endDate) {
+
+        if (startDate == null && endDate == null){
+            return this.adRepository.countAdsByMonth();
+        }
+
+        ZoneId zoneId = ZoneId.systemDefault();
+        Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
+        Instant endInstant = endDate.atStartOfDay(zoneId).toInstant();
+
+        return adRepository.countAdsByMonthByBetween(startInstant, endInstant);
     }
 
 }
