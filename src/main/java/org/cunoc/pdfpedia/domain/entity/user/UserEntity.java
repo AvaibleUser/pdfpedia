@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import org.cunoc.pdfpedia.domain.entity.announcer.AdEntity;
 import org.cunoc.pdfpedia.domain.entity.interaction.CommentEntity;
 import org.cunoc.pdfpedia.domain.entity.interaction.SubscriptionEntity;
 import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
@@ -86,6 +87,9 @@ public class UserEntity implements UserDetails {
     @OneToMany(mappedBy = "editor")
     private Set<MagazineEntity> publishedMagazines;
 
+    @OneToMany(mappedBy = "advertiser")
+    private Set<AdEntity> postAds;
+
     @OneToMany(mappedBy = "user")
     private Set<SubscriptionEntity> subscriptions;
 
@@ -102,11 +106,6 @@ public class UserEntity implements UserDetails {
     @UpdateTimestamp
     @Column
     private Instant updatedAt;
-
-    @Override
-    public String getUsername() {
-        return email;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
