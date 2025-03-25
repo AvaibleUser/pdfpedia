@@ -3,6 +3,7 @@ package org.cunoc.pdfpedia.controller.announcer;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.*;
+import org.cunoc.pdfpedia.domain.dto.dashboard.AnnouncersDto;
 import org.cunoc.pdfpedia.domain.dto.dashboard.PostAdMothDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.TopEditorDto;
 import org.cunoc.pdfpedia.service.announcer.AdService;
@@ -91,6 +92,24 @@ public class AdController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
     ) {
         return ResponseEntity.ok(adService.getAdCountsByMonth(startDate, endDate));
+    }
+
+    @GetMapping("/all-ads")
+    public ResponseEntity<List<AdDto>> findAll(){
+        List<AdDto> list = this.adService.findAll();
+        return ResponseEntity.status(HttpStatus.OK).body(list);
+    }
+
+    @GetMapping("/all-announcers")
+    public ResponseEntity<List<AnnouncersDto>> findAllAnnouncers(){
+        List<AnnouncersDto> list = this.adService.findAllAnnouncers();
+        return ResponseEntity.status(HttpStatus.OK).body(list);
+    }
+
+    @GetMapping("/all-ads/{id}")
+    public ResponseEntity<List<AdDto>> getMyAds(@PathVariable Long id){
+        List<AdDto> list = this.adService.findAllByUserId(id);
+        return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
 }

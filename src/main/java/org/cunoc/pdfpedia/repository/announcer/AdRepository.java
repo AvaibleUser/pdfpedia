@@ -23,6 +23,7 @@ public interface AdRepository extends JpaRepository<AdEntity, Long> {
     Integer countAllByAdvertiserIdAndIsActiveTrue(Long id);
     List<AdEntity> findAllByAdvertiserIdAndIsActiveTrueAndCreatedAtBetweenOrderByExpiresAtDesc(Long id, LocalDate startDate, LocalDate endDate);
     List<AdEntity> findAllByAdvertiserIdAndIsActiveTrueOrderByExpiresAtDesc(Long id);
+    List<AdEntity> findAllByOrderByExpiresAtDesc();
 
     @EntityGraph(attributePaths = {"viewAds", "chargePeriodAd"})
     List<AdEntity> findByAdvertiser_Id(Long advertiserId);

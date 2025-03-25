@@ -4,6 +4,7 @@ package org.cunoc.pdfpedia.service.announcer;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.*;
+import org.cunoc.pdfpedia.domain.dto.dashboard.AnnouncersDto;
 import org.cunoc.pdfpedia.domain.dto.dashboard.PostAdMothDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.TopEditorDto;
 import org.cunoc.pdfpedia.domain.entity.announcer.AdEntity;
@@ -198,5 +199,20 @@ public class AdService {
 
         return adRepository.countAdsByMonthByBetween(startInstant, endInstant);
     }
+
+    @Transactional(readOnly = true)
+    public List<AdDto> findAll() {
+        return this.adRepository.findAllByOrderByExpiresAtDesc()
+                .stream()
+                .map(this.mapperAd::toDto)
+                .toList();
+    }
+
+    public  List<AnnouncersDto> findAllAnnouncers(){
+        return this.userRepository.findAllByRole_Name("ANNOUNCER", AnnouncersDto.class);
+    }
+
+
+
 
 }
