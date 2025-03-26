@@ -3,6 +3,7 @@ package org.cunoc.pdfpedia.service.admin;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.admin.MagazineAdminDto;
 import org.cunoc.pdfpedia.domain.dto.admin.UpdateCostMagazineDto;
+import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.MagazineCostTotalDto;
 import org.cunoc.pdfpedia.domain.dto.dashboard.AnnouncersDto;
 import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.cunoc.pdfpedia.domain.exception.ValueNotFoundException;
@@ -10,7 +11,13 @@ import org.cunoc.pdfpedia.repository.magazine.MagazineRepository;
 import org.cunoc.pdfpedia.repository.user.UserRepository;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Service
@@ -19,6 +26,21 @@ public class AdminService {
 
     private final MagazineRepository magazineRepository;
     private final UserRepository userRepository;
+
+    public BigDecimal calculateTotalCost(Instant createdAt, BigDecimal costPerDay) {
+
+        LocalDate createdDate = createdAt.atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate currentDate = LocalDate.now(ZoneId.systemDefault());
+
+        // obtener los dias que han pasado fecha creacion y fecha actual
+        long daysElapsed = ChronoUnit.DAYS.between(createdDate, currentDate);
+
+        if (daysElapsed < 0) {
+            return BigDecimal.ZERO;
+        }
+
+        return costPerDay.multiply(BigDecimal.valueOf(daysElapsed));
+    }
 
     public MagazineAdminDto toDto(MagazineEntity magazineEntity) {
         return MagazineAdminDto
@@ -30,6 +52,17 @@ public class AdminService {
                 .username(magazineEntity.getEditor().getUsername())
                 .build();
 
+    }
+
+    public MagazineCostTotalDto totalDto(MagazineEntity magazineEntity) {
+        return MagazineCostTotalDto
+                .builder()
+                .costPerDay(magazineEntity.getCostPerDay())
+                .title(magazineEntity.getTitle())
+                .username(magazineEntity.getEditor().getUsername())
+                .createdAt(magazineEntity.getCreatedAt())
+                .costTotal(this.calculateTotalCost(magazineEntity.getCreatedAt(), magazineEntity.getCostPerDay()))
+                .build();
     }
 
     private boolean hasValidEditor(Long editorId) {
@@ -69,6 +102,26 @@ public class AdminService {
 
     public  List<AnnouncersDto> findAllEditors(){
         return this.userRepository.findAllByRole_Name("EDITOR", AnnouncersDto.class);
+    }
+
+    @Transactional
+    public List<MagazineCostTotalDto> getAllCostTotalMagazines(LocalDate startDate, LocalDate endDate){
+
+        if (startDate == null || endDate == null) {
+            return this.magazineRepository.findAllByCostPerDayIsNotNull()
+                    .stream()
+                    .map(this::totalDto)
+                    .toList();
+        }
+
+        ZoneId zoneId = ZoneId.systemDefault();
+        Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
+        Instant endInstant = endDate.atStartOfDay(zoneId).toInstant();
+
+        return this.magazineRepository.findAllByCostPerDayIsNotNullAndCreatedAtBetween(startInstant, endInstant)
+                .stream()
+                .map(this::totalDto)
+                .toList();
     }
 
 

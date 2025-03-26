@@ -1,14 +1,13 @@
 package org.cunoc.pdfpedia.controller.admin;
 
 import lombok.RequiredArgsConstructor;
+import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
 import org.cunoc.pdfpedia.domain.dto.dashboard.CountRegisterByRolDto;
 import org.cunoc.pdfpedia.service.admin.ReportService;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,4 +27,14 @@ public class ReportController {
     ) {
         return ResponseEntity.ok(this.reportService.findCountRegisterByRol(startDate, endDate));
     }
+
+    @GetMapping("/earnings-total")
+    public ResponseEntity<EarningsReport> getTotalReportEarnings(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ){
+        return ResponseEntity.ok(this.reportService.getTotalReportEarnings(startDate, endDate));
+    }
+
+
 }
