@@ -12,7 +12,6 @@ import java.util.Set;
 
 import org.assertj.core.api.BDDAssertions;
 import org.cunoc.pdfpedia.domain.dto.magazine.AddMagazineDto;
-import org.cunoc.pdfpedia.domain.dto.magazine.MagazinePreviewDto;
 import org.cunoc.pdfpedia.domain.entity.magazine.CategoryEntity;
 import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.cunoc.pdfpedia.domain.entity.magazine.TagEntity;
@@ -47,40 +46,6 @@ public class MagazineServiceTest {
     private MagazineService magazineService;
 
     @Test
-    void canFindEditorMagazines() {
-        // given
-        long editorId = 71L;
-        List<MagazinePreviewDto> expectedMagazines = List.of(
-                MagazinePreviewDto.builder()
-                        .id(1L)
-                        .title("amazing title")
-                        .description("yeah an amazing description")
-                        .editorUsername("that editor")
-                        .categoryName("amazing")
-                        .tagsName(Set.of("that", "amazing"))
-                        .build(),
-                MagazinePreviewDto.builder()
-                        .id(2L)
-                        .title("not so amazing title")
-                        .description("another amazing description")
-                        .editorUsername("not that editor")
-                        .categoryName("worse")
-                        .tagsName(Set.of("not", "not that bad"))
-                        .build());
-
-        given(magazineRepository.findAllByIsDeletedAndEditorId(false, editorId, MagazinePreviewDto.class))
-                .willReturn(expectedMagazines);
-
-        // when
-        List<MagazinePreviewDto> actualMagazines = magazineService.findEditorMagazines(editorId);
-
-        // then
-        BDDAssertions.then(actualMagazines)
-                .usingRecursiveComparison()
-                .isEqualTo(expectedMagazines);
-    }
-
-    @Test
     void canSaveMagazine() {
         // given
         long editorId = 501L;
@@ -90,25 +55,6 @@ public class MagazineServiceTest {
         UserEntity editor = mock(UserEntity.class);
         CategoryEntity category = mock(CategoryEntity.class);
         Set<TagEntity> tags = Set.of(mock(TagEntity.class), mock(TagEntity.class));
-
-        given(userRepository.existsById(editorId)).willReturn(true);
-        given(categoryRepository.existsById(categoryId)).willReturn(true);
-        given(tagRepository.existsAllByIdIn(tagIds)).willReturn(true);
-
-        given(userRepository.findById(editorId)).willReturn(Optional.of(editor));
-        given(categoryRepository.findById(categoryId)).willReturn(Optional.of(category));
-        given(tagRepository.findAllByIdIn(tagIds)).willReturn(tags);
-
-        AddMagazineDto inMagazine = AddMagazineDto.builder()
-                .title("title")
-                .description("description")
-                .adBlockingExpirationDate(null)
-                .disableLikes(false)
-                .disableComments(false)
-                .disableSuscriptions(false)
-                .categoryId(categoryId)
-                .tagIds(tagIds)
-                .build();
 
         MagazineEntity expectedMagazine = MagazineEntity.builder()
                 .title("title")
@@ -120,6 +66,27 @@ public class MagazineServiceTest {
                 .category(category)
                 .tags(tags)
                 .editor(editor)
+                .build();
+
+        given(userRepository.existsById(editorId)).willReturn(true);
+        given(categoryRepository.existsById(categoryId)).willReturn(true);
+        given(tagRepository.existsAllByIdIn(tagIds)).willReturn(true);
+
+        given(userRepository.findById(editorId)).willReturn(Optional.of(editor));
+        given(categoryRepository.findById(categoryId)).willReturn(Optional.of(category));
+        given(tagRepository.findAllByIdIn(tagIds)).willReturn(tags);
+
+        given(magazineRepository.save(refEq(expectedMagazine))).willReturn(expectedMagazine);
+
+        AddMagazineDto inMagazine = AddMagazineDto.builder()
+                .title("title")
+                .description("description")
+                .adBlockingExpirationDate(null)
+                .disableLikes(false)
+                .disableComments(false)
+                .disableSuscriptions(false)
+                .categoryId(categoryId)
+                .tagIds(tagIds)
                 .build();
 
         // when

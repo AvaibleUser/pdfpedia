@@ -42,6 +42,9 @@ public class MagazineIssueEntity {
     private String pdfUrl;
 
     @Column
+    private String title;
+
+    @Column
     private boolean isDeleted;
 
     @NonNull
