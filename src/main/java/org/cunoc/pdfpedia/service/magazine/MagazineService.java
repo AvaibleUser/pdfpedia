@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.cunoc.pdfpedia.domain.dto.magazine.AddMagazineDto;
+import org.cunoc.pdfpedia.domain.dto.magazine.MagazineItemDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.MagazinePreviewDto;
 import org.cunoc.pdfpedia.domain.entity.magazine.CategoryEntity;
 import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
@@ -14,7 +15,11 @@ import org.cunoc.pdfpedia.repository.magazine.CategoryRepository;
 import org.cunoc.pdfpedia.repository.magazine.MagazineRepository;
 import org.cunoc.pdfpedia.repository.magazine.TagRepository;
 import org.cunoc.pdfpedia.repository.user.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 import lombok.RequiredArgsConstructor;
 
@@ -56,5 +61,22 @@ public class MagazineService implements IMagazineService {
                 .tags(tags)
                 .editor(editor)
                 .build());
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public Page<MagazineItemDto> getMagazinesByCategory(Long categoryId, Pageable pageable) {
+        return magazineRepository.findByCategoryId(categoryId, pageable)
+                .map(MagazineItemDto::fromEntity);
+    }
+
+    @Transactional(readOnly = true)
+    public MagazineItemDto getMagazineById(Long id) {
+
+        if (!magazineRepository.existsById(id)) {
+            throw new BadRequestException("Magazine not found");
+        }
+
+        return MagazineItemDto.fromEntity(magazineRepository.findById(id).get());
     }
 }
