@@ -1,4 +1,4 @@
-package org.cunoc.pdfpedia.service.report;
+package org.cunoc.pdfpedia.service.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.dashboard.CountRegisterByRolDto;

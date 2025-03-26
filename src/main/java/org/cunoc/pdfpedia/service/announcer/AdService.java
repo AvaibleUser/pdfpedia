@@ -212,7 +212,4 @@ public class AdService {
         return this.userRepository.findAllByRole_Name("ANNOUNCER", AnnouncersDto.class);
     }
 
-
-
-
 }

@@ -1,8 +1,8 @@
-package org.cunoc.pdfpedia.controller.reports;
+package org.cunoc.pdfpedia.controller.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.dashboard.CountRegisterByRolDto;
-import org.cunoc.pdfpedia.service.report.ReportService;
+import org.cunoc.pdfpedia.service.admin.ReportService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +20,6 @@ import java.util.List;
 public class ReportController {
 
     private final ReportService reportService;
-
 
     @GetMapping("/count-by-role")
     public ResponseEntity<List<CountRegisterByRolDto>> getCountByRole(

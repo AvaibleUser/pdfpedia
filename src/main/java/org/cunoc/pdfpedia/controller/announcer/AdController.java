@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.*;
 import org.cunoc.pdfpedia.domain.dto.dashboard.AnnouncersDto;
-import org.cunoc.pdfpedia.domain.dto.dashboard.PostAdMothDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.TopEditorDto;
 import org.cunoc.pdfpedia.service.announcer.AdService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;

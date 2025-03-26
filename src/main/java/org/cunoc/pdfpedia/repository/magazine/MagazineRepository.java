@@ -7,6 +7,8 @@ import org.cunoc.pdfpedia.domain.dto.announcer.PostAdMount;
 import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -22,6 +24,16 @@ public interface MagazineRepository extends JpaRepository<MagazineEntity, Long> 
     Page<MagazineEntity> findAllByIsDeletedFalseOrderByEditor(Pageable pageable);
 
     Page<MagazineEntity> findAllByIsDeletedFalseAndCreatedAtBetweenOrderByEditor(Instant startDate, Instant endDate, Pageable pageable);
+
+
+    List<MagazineEntity> findAll(Sort sort);
+
+    List<MagazineEntity> findAllByCostPerDayIsNullOrderByCreatedAt(Sort sort);
+
+    List<MagazineEntity> findAllByCostPerDayIsNullAndEditor_IdOrderByCreatedAt(Long editorId, Sort sort);
+
+    List<MagazineEntity> findAllByEditor_IdOrderByCreatedAt(Long editorId, Sort sort);
+
 
     @Query("""
     SELECT NEW org.cunoc.pdfpedia.domain.dto.announcer.PostAdMount(
