@@ -82,7 +82,8 @@ public class MagazineEntity {
     @JoinColumn(name = "category_id", nullable = false)
     private CategoryEntity category;
 
-    @ManyToMany(mappedBy = "magazines")
+    @ManyToMany
+    @JoinTable(name = "magazine_tag", schema = "magazine_control", joinColumns = @JoinColumn(name = "magazine_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "tag_id", referencedColumnName = "id"))
     private Set<TagEntity> tags;
 
     @OneToMany(mappedBy = "magazine")

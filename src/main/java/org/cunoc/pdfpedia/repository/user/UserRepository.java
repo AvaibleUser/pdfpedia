@@ -4,7 +4,6 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
-import org.cunoc.pdfpedia.domain.entity.user.RoleEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -13,6 +12,10 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     boolean existsByEmail(String email);
+
+    Optional<?> findUnknownById(long id, Class<?> type);
+
+    <U> Optional<U> findById(long id, Class<U> type);
 
     <U> Optional<U> findByEmail(String email, Class<U> type);
 
