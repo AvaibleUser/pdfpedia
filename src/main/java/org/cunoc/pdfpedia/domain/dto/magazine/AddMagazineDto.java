@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
@@ -15,7 +16,7 @@ import lombok.Builder;
 public record AddMagazineDto(
         @NotBlank String title,
         @NotBlank String description,
-        @JsonFormat(pattern = "yyyy-MM-dd") LocalDate adBlockingExpirationDate,
+        @JsonFormat(pattern = "yyyy-MM-dd") @Future LocalDate adBlockingExpirationDate,
         boolean disableLikes,
         boolean disableComments,
         boolean disableSuscriptions,
