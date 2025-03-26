@@ -19,7 +19,7 @@ public class ChargePeriodAdService {
 
     private final ChargePeriodAdRepository chargePeriodAdRepository;
 
-    private ChargePeriodAdDto toDto(ChargePeriodAdEntity chargePeriodAdEntity) {
+    public ChargePeriodAdDto toDto(ChargePeriodAdEntity chargePeriodAdEntity) {
         return new ChargePeriodAdDto(
                 chargePeriodAdEntity.getId(),
                 chargePeriodAdEntity.getAdType(),
@@ -41,8 +41,6 @@ public class ChargePeriodAdService {
         ChargePeriodAdEntity existingEntity = chargePeriodAdRepository.findById(id)
                 .orElseThrow(() -> new ValueNotFoundException("Periodo de vigencia no encontrado"));
 
-        existingEntity.setAdType(dto.adType());
-        existingEntity.setDurationDays(dto.durationDays());
         existingEntity.setCost(dto.cost());
 
         ChargePeriodAdEntity updatedEntity = chargePeriodAdRepository.save(existingEntity);

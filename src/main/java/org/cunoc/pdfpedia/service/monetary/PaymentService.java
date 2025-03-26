@@ -2,7 +2,6 @@ package org.cunoc.pdfpedia.service.monetary;
 
 
 import lombok.RequiredArgsConstructor;
-import org.cunoc.pdfpedia.domain.dto.announcer.PostAdMount;
 import org.cunoc.pdfpedia.domain.dto.monetary.TotalAmountPaymentByMonthDto;
 import org.cunoc.pdfpedia.domain.entity.announcer.AdEntity;
 import org.cunoc.pdfpedia.domain.entity.monetary.PaymentEntity;

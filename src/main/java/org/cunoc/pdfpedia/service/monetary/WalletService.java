@@ -18,7 +18,7 @@ public class WalletService {
 
     private final WalletRepository walletRepository;
 
-    private WalletDto toDto(WalletEntity walletEntity) {
+    public WalletDto toDto(WalletEntity walletEntity) {
         return new WalletDto(walletEntity.getId(), walletEntity.getBalance());
     }
 
