@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/v1/announcers/charge-period-ads")
+@RequestMapping("/v1/ads/charge-period-ads")
 @RequiredArgsConstructor
-public class chargePeriodAdController {
+public class ChargePeriodAdController {
 
     private final ChargePeriodAdService chargePeriodAdService;
 

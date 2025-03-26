@@ -10,6 +10,4 @@ import org.springframework.stereotype.Repository;
 public interface RoleRepository extends JpaRepository<RoleEntity, Long> {
 
     <T> List<T> findAllRolesByNameNot(String name, Class<T> type);
-
-    RoleEntity findByName(String name);
 }

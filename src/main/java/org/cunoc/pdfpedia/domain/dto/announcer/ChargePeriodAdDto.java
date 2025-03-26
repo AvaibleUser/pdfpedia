@@ -1,13 +1,14 @@
 package org.cunoc.pdfpedia.domain.dto.announcer;
 
+import jakarta.validation.constraints.Positive;
 import org.cunoc.pdfpedia.domain.type.AdType;
 
 import java.math.BigDecimal;
 
 public record ChargePeriodAdDto(
-        Long id,
+        @Positive Long id,
         AdType adType,
-        Integer durationDays,
-        BigDecimal cost
+        @Positive Integer durationDays,
+        @Positive BigDecimal cost
 ) {
 }
