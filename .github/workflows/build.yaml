@@ -1,19 +1,19 @@
-name: Test and Build
+name: Build
 
 on:
-  push:
+  workflow_run:
+    workflows: Test
     branches:
       - main
       - dev
-
-  pull_request:
-    branches:
-      - main
-      - dev
+    types:
+      - completed
 
 jobs:
-  test:
+  build:
+    name: Build Jar and Dockerize
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       # BEGIN - Enviroment setup
       - name: Checkout code
@@ -31,44 +31,21 @@ jobs:
 
       # END - Enviroment setup
 
-      # BEGIN - Gradle test tasks
-      - name: Test with gradle
-        run: ./gradlew clean test
-
-      - name: Test coverage with jacoco
-        run: ./gradlew jacocoTestReport jacocoTestCoverageVerification
-
-      - name: Upload test results
-        uses: actions/upload-artifact@v3
-        with:
-          name: test-results
-          path: ${{ github.workspace }}/target/site/jacoco/jacoco.xml
-
-      # END - Gradle test tasks
-
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
       # BEGIN - Gradle build tasks
       - name: Build the app
         run: ./gradlew clean build
 
       # END - Gradle build tasks
 
-  dockerize:
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
       # BEGIN - GCP setup
       - name: Determine environment
         id: determine-env
         run: |
           # Determine environment based on branch
           if [ "${{ github.ref_name }}" == "main" ]; then
-            echo "MY_PROJECT_ENV=prod" >> $GITHUB_ENV
+            echo "ENV=prod" >> $GITHUB_ENV
           else
-            echo "MY_PROJECT_ENV=dev" >> $GITHUB_ENV
+            echo "ENV=dev" >> $GITHUB_ENV
           fi
 
       - name: Authenticate to GCP
@@ -82,14 +59,18 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
 
       - name: Configure Docker to use gcloud as a credential helper
-        run: gcloud auth configure-docker ${{ secrets.GCP_LOCATION }}-docker.pkg.dev
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ secrets.GCP_REGION }}-docker.pkg.dev
+          username: _json_key
+          password: ${{ secrets.GCP_DEPLOY_SA }}
 
       # END - GCP setup
 
       # BEGIN - Docker build
       - name: Build and Push Docker image
         run: |
-          IMAGE_URI="${{ secrets.GCP_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/my-images/revistland-${{ env.MY_PROJECT_ENV  }}:latest"
+          IMAGE_URI="${{ secrets.GCP_LOCATION }}/pdfpedia-${{ env.ENV  }}:latest"
           docker build -t "$IMAGE_URI" .
           docker push "$IMAGE_URI"
 

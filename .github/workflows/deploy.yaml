@@ -2,7 +2,7 @@ name: Deploy
 
 on:
   workflow_run:
-    workflows: Test and Build
+    workflows: Build
     branches:
       - main
       - dev
@@ -11,7 +11,9 @@ on:
 
 jobs:
   deploy:
+    name: Cloud Run Deploy
     runs-on: ubuntu-latest
+    environment: "${{ github.ref_name == 'main' && 'prod' || 'dev' }}"
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       # BEGIN - Enviroment setup
@@ -26,9 +28,9 @@ jobs:
         run: |
           # Determine environment based on branch
           if [ "${{ github.ref_name }}" == "main" ]; then
-            echo "MY_PROJECT_ENV=prod" >> $GITHUB_ENV
+            echo "ENV=prod" >> $GITHUB_ENV
           else
-            echo "MY_PROJECT_ENV=dev" >> $GITHUB_ENV
+            echo "ENV=dev" >> $GITHUB_ENV
           fi
 
       - name: Authenticate to GCP
@@ -47,7 +49,19 @@ jobs:
       - name: Deploy to Cloud Run
         uses: "google-github-actions/deploy-cloudrun@v2"
         with:
-          image: "${{ secrets.GCP_LOCATION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/my-images/revistland-${{ env.MY_PROJECT_ENV  }}:latest"
-          region: ${{ secrets.GCP_LOCATION }}
+          image: "${{ secrets.GCP_LOCATION }}/pdfpedia-${{ env.ENV  }}:latest"
+          region: ${{ secrets.GCP_REGION }}
+          env-vars: |-
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASS=${{ secrets.DB_PASS }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_DATABASE=${{ secrets.DB_DATABASE }}
+
+            EMAIL_ADDRESS=${{ secrets.EMAIL_ADDRESS }}
+            EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
+
+            STORAGE_CLOUD_NAME=${{ secrets.STORAGE_CLOUD_NAME }}
+            STORAGE_API_KEY=${{ secrets.STORAGE_API_KEY }}
+            STORAGE_API_SECRET=${{ secrets.STORAGE_API_SECRET }}
 
       # END - Deploy
