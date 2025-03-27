@@ -1,19 +1,17 @@
 name: Build
 
 on:
-  workflow_run:
-    workflows: Test
+  push:
     branches:
       - main
       - dev
-    types:
-      - completed
 
 jobs:
   build:
     name: Build Jar and Dockerize
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    environment: "${{ github.ref_name == 'main' && 'prod' || 'dev' }}"
+    env: ${{ secrets }}
     steps:
       # BEGIN - Enviroment setup
       - name: Checkout code
