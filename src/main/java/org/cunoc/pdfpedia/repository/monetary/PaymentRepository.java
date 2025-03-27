@@ -2,6 +2,7 @@ package org.cunoc.pdfpedia.repository.monetary;
 
 import org.cunoc.pdfpedia.domain.dto.monetary.TotalAmountPaymentByMonthDto;
 import org.cunoc.pdfpedia.domain.entity.monetary.PaymentEntity;
+import org.cunoc.pdfpedia.domain.type.AdType;
 import org.cunoc.pdfpedia.domain.type.PaymentType;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -26,6 +27,15 @@ public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
     @Query("""
     SELECT p FROM payment p
      LEFT JOIN FETCH p.ad a
+     LEFT JOIN FETCH a.advertiser LEFT JOIN FETCH a.chargePeriodAd
+     WHERE p.paymentType = :paymentType
+     AND a.chargePeriodAd.adType = :adType
+    """)
+    List<PaymentEntity> findByPaymentTypeAndAdType(@Param("paymentType") PaymentType paymentType, @Param("adType") AdType adType);
+
+    @Query("""
+    SELECT p FROM payment p
+     LEFT JOIN FETCH p.ad a
      LEFT JOIN FETCH a.advertiser
      LEFT JOIN FETCH a.chargePeriodAd
      WHERE p.paymentType = :paymentType
@@ -34,7 +44,24 @@ public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
     List<PaymentEntity> findByPaymentTypeAndDateRange(
             @Param("paymentType") PaymentType paymentType,
             @Param("startDate") Instant startDate,
-            @Param("endDate") Instant endDate);
+            @Param("endDate") Instant endDate
+    );
+
+    @Query("""
+    SELECT p FROM payment p
+    LEFT JOIN FETCH p.ad a
+    LEFT JOIN FETCH a.advertiser LEFT JOIN FETCH a.chargePeriodAd
+    WHERE p.paymentType = :paymentType
+    AND p.paidAt BETWEEN :startDate AND :endDate
+    AND a.chargePeriodAd.adType = :adType
+    """)
+    List<PaymentEntity> findByPaymentTypeAndAdTypeAndDateRange(
+            @Param("paymentType") PaymentType paymentType,
+            @Param("adType") AdType adType,
+            @Param("startDate") Instant startDate,
+            @Param("endDate") Instant endDate
+    );
+
 
     @Query("""
     SELECT p FROM payment p

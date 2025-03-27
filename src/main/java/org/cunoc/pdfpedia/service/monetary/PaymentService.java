@@ -7,6 +7,7 @@ import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.MagazineReportDto;
 import org.cunoc.pdfpedia.domain.dto.monetary.TotalAmountPaymentByMonthDto;
 import org.cunoc.pdfpedia.domain.entity.announcer.AdEntity;
 import org.cunoc.pdfpedia.domain.entity.monetary.PaymentEntity;
+import org.cunoc.pdfpedia.domain.type.AdType;
 import org.cunoc.pdfpedia.domain.type.PaymentType;
 import org.cunoc.pdfpedia.repository.monetary.PaymentRepository;
 import org.springframework.stereotype.Service;
@@ -35,7 +36,6 @@ public class PaymentService {
                 .build();
     }
 
-
     public MagazineReportDto toDtoMagazineReport(PaymentEntity paymentEntity) {
         return MagazineReportDto
                 .builder()
@@ -45,7 +45,6 @@ public class PaymentService {
                 .title(paymentEntity.getMagazine().getTitle())
                 .build();
     }
-
 
     @Transactional
     public void createPaymentPostAd(BigDecimal amount, AdEntity ad){
@@ -63,7 +62,7 @@ public class PaymentService {
         return this.paymentRepository.sumAmountAdsByMonth(userId);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<AdReportDto> getPaymentToPostAdBetween(LocalDate startDate, LocalDate endDate){
 
         if (startDate == null || endDate == null) {
@@ -85,7 +84,7 @@ public class PaymentService {
 
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public List<MagazineReportDto> getPaymentToBlockAdMagazineBetween(LocalDate startDate, LocalDate endDate){
 
         if (startDate == null || endDate == null) {
@@ -104,6 +103,41 @@ public class PaymentService {
                 .findByPaymentTypeMagazineAndDateRange(PaymentType.BLOCK_ADS, startInstant, endInstant)
                 .stream()
                 .map(this::toDtoMagazineReport).toList();
+
+    }
+
+    public AdType getTypeFilter(Integer type){
+        if (type<0 || type>3) return  null;
+        if (type == 1) return AdType.TEXT_IMAGE;
+        if (type == 2) return AdType.VIDEO;
+        if (type == 3) return AdType.TEXT;
+        return null;
+    }
+
+    @Transactional
+    public List<AdReportDto> getPaymentToPostAdByTypeAndBetween(LocalDate startDate, LocalDate endDate, Integer type){
+        AdType adTypeFilter = getTypeFilter(type);
+
+        if (adTypeFilter == null) {
+            return this.getPaymentToPostAdBetween(startDate, endDate);
+        }
+
+        if (startDate == null || endDate == null) {
+            return paymentRepository
+                    .findByPaymentTypeAndAdType(PaymentType.POST_AD, adTypeFilter)
+                    .stream()
+                    .map(this::toDtoAdReport).toList();
+
+        }
+
+        ZoneId zoneId = ZoneId.systemDefault();
+        Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
+        Instant endInstant = endDate.atStartOfDay(zoneId).toInstant();
+
+        return paymentRepository
+                .findByPaymentTypeAndAdTypeAndDateRange(PaymentType.POST_AD, adTypeFilter, startInstant, endInstant)
+                .stream()
+                .map(this::toDtoAdReport).toList();
 
     }
 }

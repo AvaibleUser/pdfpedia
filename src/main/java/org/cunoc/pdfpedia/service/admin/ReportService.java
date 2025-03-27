@@ -5,6 +5,7 @@ import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.AdReportDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.MagazineCostTotalDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.MagazineReportDto;
+import org.cunoc.pdfpedia.domain.dto.admin.report.postAd.PostAdReportTotal;
 import org.cunoc.pdfpedia.domain.dto.dashboard.CountRegisterByRolDto;
 import org.cunoc.pdfpedia.domain.entity.monetary.PaymentEntity;
 import org.cunoc.pdfpedia.domain.type.PaymentType;
@@ -115,5 +116,18 @@ public class ReportService {
                 .totalEarnings(totalEarnings)
                 .build();
     }
+
+    public PostAdReportTotal getPostAdReportTotal(LocalDate startDate, LocalDate endDate, Integer type){
+        List<AdReportDto> adPostReport = this.paymentService.getPaymentToPostAdByTypeAndBetween(startDate, endDate, type);
+        BigDecimal totalAdPost = this.getTotalAdPost(adPostReport);
+
+        return PostAdReportTotal
+                .builder()
+                .adReportDto(adPostReport)
+                .totalAdPost(totalAdPost)
+                .build();
+
+    }
+
 
 }
