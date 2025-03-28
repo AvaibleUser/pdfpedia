@@ -14,6 +14,7 @@ public record EarningsReport(
         BigDecimal totalIncome,
         List<AdReportDto> adReportDto,
         List<MagazineReportDto> magazineReportDto,
-        List<MagazineCostTotalDto> magazineCostTotalDto
+        List<MagazineCostTotalDto> magazineCostTotalDto,
+        String range
 ) {
 }

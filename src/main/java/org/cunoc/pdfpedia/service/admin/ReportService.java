@@ -181,7 +181,11 @@ public class ReportService {
 
         BigDecimal totalAdPost = this.getTotalAdPostEmail(adReports);
 
-        return new TotalReportPaymentPostAdByAnnouncersDto(enrichedPayments, totalAdPost);
+        return TotalReportPaymentPostAdByAnnouncersDto
+                .builder()
+                .paymentPostAdPerAnnouncerDtos(enrichedPayments)
+                .totalAdPost(totalAdPost)
+                .build();
     }
 
     @Transactional

@@ -9,6 +9,8 @@ import java.util.List;
 @Builder(toBuilder = true)
 public record PostAdReportTotal(
         List<AdReportDto> adReportDto,
-        BigDecimal totalAdPost
+        BigDecimal totalAdPost,
+        String range,
+        String filter
 ) {
 }

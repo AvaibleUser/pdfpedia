@@ -46,8 +46,7 @@ public interface MagazineRepository extends JpaRepository<MagazineEntity, Long> 
     List<MagazineEntity> findAllByEditor_IdOrderByCreatedAt(Long editorId, Sort sort);
 
     List<MagazineEntity> findAllByCostPerDayIsNotNull();
-    List<MagazineEntity> findAllByCostPerDayIsNotNullAndCreatedAtBetween(Instant startDate, Instant endDate);
-
+    List<MagazineEntity> findAllByCostPerDayIsNotNullAndCreatedAtLessThanEqual(Instant endDate);
     @Query("""
             SELECT NEW org.cunoc.pdfpedia.domain.dto.announcer.PostAdMount(
                 TO_CHAR(a.createdAt, 'MM'),

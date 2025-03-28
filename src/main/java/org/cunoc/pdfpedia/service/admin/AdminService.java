@@ -31,9 +31,9 @@ public class AdminService {
 
     public BigDecimal calculateTotalCost(Instant createdAt, BigDecimal costPerDay,LocalDate startDate, LocalDate endDate) {
 
-        LocalDate createdDate = startDate;
-        if (startDate == null){
-            createdDate = createdAt.atZone(ZoneId.systemDefault()).toLocalDate();
+        LocalDate createdDate = createdAt.atZone(ZoneId.systemDefault()).toLocalDate();;
+        if (startDate != null && !createdDate.isAfter(startDate)) {
+            createdDate = startDate;
         }
         LocalDate currentDate =  Objects.requireNonNullElseGet(endDate, () -> LocalDate.now(ZoneId.systemDefault()));
 
@@ -67,7 +67,7 @@ public class AdminService {
                 .title(magazineEntity.getTitle())
                 .username(magazineEntity.getEditor().getUsername())
                 .createdAt(magazineEntity.getCreatedAt())
-                .costTotal(this.calculateTotalCost(magazineEntity.getCreatedAt(), magazineEntity.getCostPerDay(), endDate, startDate))
+                .costTotal(this.calculateTotalCost(magazineEntity.getCreatedAt(), magazineEntity.getCostPerDay(), startDate, endDate))
                 .build();
     }
 
@@ -124,7 +124,7 @@ public class AdminService {
         Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
         Instant endInstant = endDate.atStartOfDay(zoneId).toInstant();
 
-        return this.magazineRepository.findAllByCostPerDayIsNotNullAndCreatedAtBetween(startInstant, endInstant)
+        return this.magazineRepository.findAllByCostPerDayIsNotNullAndCreatedAtLessThanEqual(endInstant)
                 .stream()
                 .map(magazine -> this.totalDto(magazine, startDate, endDate))
                 .toList();
