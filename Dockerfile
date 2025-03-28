@@ -1,4 +1,4 @@
-FROM openjdk:21-jdk-slim
+FROM gcr.io/distroless/java21-debian12
 
 WORKDIR /app
 
