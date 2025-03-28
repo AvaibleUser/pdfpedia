@@ -1,5 +1,8 @@
 package org.cunoc.pdfpedia.repository.monetary;
 
+import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.AdReportDto;
+import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.AdReportEmailDto;
+import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.PaymentPostAdPerAnnouncerDto;
 import org.cunoc.pdfpedia.domain.dto.monetary.TotalAmountPaymentByMonthDto;
 import org.cunoc.pdfpedia.domain.entity.monetary.PaymentEntity;
 import org.cunoc.pdfpedia.domain.type.AdType;
@@ -95,5 +98,146 @@ public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
     ORDER BY TO_CHAR(a.paidAt, 'MM') DESC
     """)
     List<TotalAmountPaymentByMonthDto> sumAmountAdsByMonth(@Param("advertiserId") Long advertiserId);
+
+
+    @Query("""
+        SELECT new org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.PaymentPostAdPerAnnouncerDto(
+            SUM(p.amount),
+            NUll,
+            u.username
+        )
+        FROM payment p
+        JOIN p.ad a
+        JOIN a.advertiser u
+        WHERE p.paymentType = 'POST_AD'
+        GROUP BY u.username
+    """)
+    List<PaymentPostAdPerAnnouncerDto> findGroupedPaymentsByPaymentType();
+
+    @Query("""
+        SELECT new org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.AdReportEmailDto(
+            a.chargePeriodAd.adType,
+            u.username,
+            p.paidAt,
+            a.chargePeriodAd.durationDays,
+            p.amount,
+            u.email
+        )
+        FROM payment p
+        JOIN p.ad a
+        JOIN a.advertiser u
+        WHERE p.paymentType = 'POST_AD'
+    """)
+    List<AdReportEmailDto> findAdReportsByPaymentType();
+
+
+    @Query("""
+        SELECT new org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.PaymentPostAdPerAnnouncerDto(
+            SUM(p.amount),
+            NUll,
+            u.username
+        )
+        FROM payment p
+        JOIN p.ad a
+        JOIN a.advertiser u
+        WHERE p.paymentType = 'POST_AD' AND p.paidAt BETWEEN :startDate AND :endDate
+        GROUP BY u.username
+    """)
+    List<PaymentPostAdPerAnnouncerDto> findGroupedPaymentsByPaymentTypeAndBetween(
+            @Param("startDate") Instant startDate,
+            @Param("endDate") Instant endDate
+    );
+
+    @Query("""
+        SELECT new org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.AdReportEmailDto(
+            a.chargePeriodAd.adType,
+            u.username,
+            p.paidAt,
+            a.chargePeriodAd.durationDays,
+            p.amount,
+            u.email
+        )
+        FROM payment p
+        JOIN p.ad a
+        JOIN a.advertiser u
+        WHERE p.paymentType = 'POST_AD' AND p.paidAt BETWEEN :startDate AND :endDate
+    """)
+    List<AdReportEmailDto> findAdReportsByPaymentTypeAndBetween(
+            @Param("startDate") Instant startDate,
+            @Param("endDate") Instant endDate
+    );
+
+
+    @Query("""
+        SELECT new org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.PaymentPostAdPerAnnouncerDto(
+            SUM(p.amount),
+            NUll,
+            u.username
+        )
+        FROM payment p
+        JOIN p.ad a
+        JOIN a.advertiser u
+        WHERE p.paymentType = 'POST_AD' AND a.advertiser.id  = :advertiserId
+        GROUP BY u.username
+    """)
+    List<PaymentPostAdPerAnnouncerDto> findGroupedPaymentsByPaymentTypeByIdUser(@Param("advertiserId") Long advertiserId);
+
+    @Query("""
+        SELECT new org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.AdReportEmailDto(
+            a.chargePeriodAd.adType,
+            u.username,
+            p.paidAt,
+            a.chargePeriodAd.durationDays,
+            p.amount,
+            u.email
+        )
+        FROM payment p
+        JOIN p.ad a
+        JOIN a.advertiser u
+        WHERE p.paymentType = 'POST_AD' AND a.advertiser.id  = :advertiserId
+    """)
+    List<AdReportEmailDto> findAdReportsByPaymentTypeByIdUser(@Param("advertiserId") Long advertiserId);
+
+
+    @Query("""
+        SELECT new org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.PaymentPostAdPerAnnouncerDto(
+            SUM(p.amount),
+            NUll,
+            u.username
+        )
+        FROM payment p
+        JOIN p.ad a
+        JOIN a.advertiser u
+        WHERE p.paymentType = 'POST_AD' AND a.advertiser.id  = :advertiserId AND p.paidAt BETWEEN :startDate AND :endDate
+        GROUP BY u.username
+    """)
+    List<PaymentPostAdPerAnnouncerDto> findGroupedPaymentsByPaymentTypeAndBetweenById(
+            @Param("startDate") Instant startDate,
+            @Param("endDate") Instant endDate,
+            @Param("advertiserId") Long advertiserId
+    );
+
+    @Query("""
+        SELECT new org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.AdReportEmailDto(
+            a.chargePeriodAd.adType,
+            u.username,
+            p.paidAt,
+            a.chargePeriodAd.durationDays,
+            p.amount,
+            u.email
+        )
+        FROM payment p
+        JOIN p.ad a
+        JOIN a.advertiser u
+        WHERE p.paymentType = 'POST_AD' AND a.advertiser.id  = :advertiserId AND p.paidAt BETWEEN :startDate AND :endDate
+    """)
+    List<AdReportEmailDto> findAdReportsByPaymentTypeAndBetweenById(
+            @Param("startDate") Instant startDate,
+            @Param("endDate") Instant endDate,
+            @Param("advertiserId") Long advertiserId
+    );
+
+
+
 
 }

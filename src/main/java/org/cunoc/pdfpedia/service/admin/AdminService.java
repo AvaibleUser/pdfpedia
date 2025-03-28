@@ -28,11 +28,14 @@ public class AdminService {
     private final MagazineRepository magazineRepository;
     private final UserRepository userRepository;
 
-    public BigDecimal calculateTotalCost(Instant createdAt, BigDecimal costPerDay, LocalDate endDate) {
-        LocalDate createdDate = createdAt.atZone(ZoneId.systemDefault()).toLocalDate();
-        LocalDate currentDate = null;
+    public BigDecimal calculateTotalCost(Instant createdAt, BigDecimal costPerDay,LocalDate startDate, LocalDate endDate) {
 
-        currentDate = Objects.requireNonNullElseGet(endDate, () -> LocalDate.now(ZoneId.systemDefault()));
+        LocalDate createdDate = startDate;
+        if (startDate == null){
+            createdDate = createdAt.atZone(ZoneId.systemDefault()).toLocalDate();
+        }
+        LocalDate currentDate =  Objects.requireNonNullElseGet(endDate, () -> LocalDate.now(ZoneId.systemDefault()));
+
 
         // obtener los dias que han pasado fecha creacion y fecha actual
         long daysElapsed = ChronoUnit.DAYS.between(createdDate, currentDate);
@@ -56,14 +59,14 @@ public class AdminService {
 
     }
 
-    public MagazineCostTotalDto totalDto(MagazineEntity magazineEntity, LocalDate endDate) {
+    public MagazineCostTotalDto totalDto(MagazineEntity magazineEntity, LocalDate startDate, LocalDate endDate) {
         return MagazineCostTotalDto
                 .builder()
                 .costPerDay(magazineEntity.getCostPerDay())
                 .title(magazineEntity.getTitle())
                 .username(magazineEntity.getEditor().getUsername())
                 .createdAt(magazineEntity.getCreatedAt())
-                .costTotal(this.calculateTotalCost(magazineEntity.getCreatedAt(), magazineEntity.getCostPerDay(), endDate))
+                .costTotal(this.calculateTotalCost(magazineEntity.getCreatedAt(), magazineEntity.getCostPerDay(), endDate, startDate))
                 .build();
     }
 
@@ -112,7 +115,7 @@ public class AdminService {
         if (startDate == null || endDate == null) {
             return this.magazineRepository.findAllByCostPerDayIsNotNull()
                     .stream()
-                    .map(magazine -> this.totalDto(magazine, null))
+                    .map(magazine -> this.totalDto(magazine, null, null))
                     .toList();
         }
 
@@ -122,7 +125,7 @@ public class AdminService {
 
         return this.magazineRepository.findAllByCostPerDayIsNotNullAndCreatedAtBetween(startInstant, endInstant)
                 .stream()
-                .map(magazine -> this.totalDto(magazine, endDate))
+                .map(magazine -> this.totalDto(magazine, startDate, endDate))
                 .toList();
     }
 

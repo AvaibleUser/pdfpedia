@@ -2,6 +2,7 @@ package org.cunoc.pdfpedia.controller.admin;
 
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
+import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.TotalReportPaymentPostAdByAnnouncersDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.postAd.PostAdReportTotal;
 import org.cunoc.pdfpedia.domain.dto.dashboard.CountRegisterByRolDto;
 import org.cunoc.pdfpedia.service.admin.ReportService;
@@ -44,6 +45,24 @@ public class ReportController {
             @RequestParam Integer type
     ){
         return ResponseEntity.ok(this.reportService.getPostAdReportTotal(startDate, endDate, type));
+    }
+
+    @GetMapping("/post-ad-total-announcers")
+    public ResponseEntity<TotalReportPaymentPostAdByAnnouncersDto> getTotalReportEarningsPostAdByAnnouncers(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ){
+        return ResponseEntity.ok(this.reportService.getTotalPaymentsByAdvertisers(startDate, endDate));
+    }
+
+    @GetMapping("/post-ad-total-announcers/{id}")
+    public ResponseEntity<TotalReportPaymentPostAdByAnnouncersDto> getTotalReportEarningsPostAdByAnnouncersById(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+            @PathVariable Long id
+    ){
+        System.out.println("el id es " + id);
+        return ResponseEntity.ok(this.reportService.getTotalPaymentsByAdvertisersById(startDate, endDate,id));
     }
 
 

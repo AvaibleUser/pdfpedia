@@ -1,5 +1,6 @@
 package org.cunoc.pdfpedia.controller.announcer;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.*;
@@ -78,6 +79,7 @@ public class AdController {
     }
 
     @GetMapping("/top-ad-publisher")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<TopEditorDto> getTopEditorInRange(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
@@ -94,6 +96,7 @@ public class AdController {
     }
 
     @GetMapping("/all-ads")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<List<AdDto>> findAll(){
         List<AdDto> list = this.adService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(list);
@@ -106,6 +109,7 @@ public class AdController {
     }
 
     @GetMapping("/all-ads/{id}")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<List<AdDto>> getMyAds(@PathVariable Long id){
         List<AdDto> list = this.adService.findAllByUserId(id);
         return ResponseEntity.status(HttpStatus.OK).body(list);
