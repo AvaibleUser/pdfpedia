@@ -9,9 +9,14 @@ import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.AdReportEm
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.PaymentPostAdPerAnnouncerDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.TotalReportPaymentPostAdByAnnouncersDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.postAd.PostAdReportTotal;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.MagazineProjectionDto;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.MagazineSubscriptions;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.ReportTopMagazineSubscriptions;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.SubscriptionsDto;
 import org.cunoc.pdfpedia.domain.dto.dashboard.CountRegisterByRolDto;
 import org.cunoc.pdfpedia.domain.entity.monetary.PaymentEntity;
 import org.cunoc.pdfpedia.domain.type.PaymentType;
+import org.cunoc.pdfpedia.repository.interaction.SubscriptionRepository;
 import org.cunoc.pdfpedia.repository.monetary.PaymentRepository;
 import org.cunoc.pdfpedia.repository.user.UserRepository;
 import org.cunoc.pdfpedia.service.monetary.PaymentService;
@@ -35,6 +40,7 @@ public class ReportService {
     private final PaymentService paymentService;
     private final AdminService adminService;
     private final PaymentRepository paymentRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
     public List<CountRegisterByRolDto> findCountRegisterByRol(LocalDate startDate, LocalDate endDate) {
         List<CountRegisterByRolDto> countRegisterByRol = new ArrayList<>();
@@ -206,6 +212,70 @@ public class ReportService {
         List<AdReportEmailDto> adReports = paymentRepository.findAdReportsByPaymentTypeAndBetweenById(startInstant, endInstant, id);
 
         return mapperReport(payments, adReports);
+
+    }
+
+    @Transactional
+    public void prueba(){
+        System.out.println(this.getTop5MagazinesBySubscriptions());
+    }
+
+    // limpia el arreglo orrigina y para mejor presentacion
+    public ReportTopMagazineSubscriptions getTopClear(List<MagazineProjectionDto> subscriptions){
+        // Agrupar las suscripciones por revista
+        Map<Long, List<MagazineProjectionDto>> groupedByMagazine = subscriptions.stream()
+                .collect(Collectors.groupingBy(MagazineProjectionDto::magazineId));
+
+        // Para cada revista, generar un objeto MagazineSubscriptions con los detalles requeridos
+        List<MagazineSubscriptions> topMagazines = groupedByMagazine.entrySet().stream()
+                .sorted((entry1, entry2) -> Integer.compare(entry2.getValue().size(), entry1.getValue().size()))  // Ordenar por la cantidad de suscripciones
+                .limit(5)  // Tomar solo las 5 con más suscripciones
+                .map(entry -> {
+                    List<SubscriptionsDto> subscriptionsDtos = entry.getValue().stream()
+                            .map(dto -> new SubscriptionsDto(
+                                    dto.nameSusbcription(),
+                                    dto.email(),
+                                    dto.subscribedAt()
+                            ))
+                            .collect(Collectors.toList());
+
+                    // Obtener la primera revista del grupo (ya que todas tienen el mismo ID de revista)
+                    MagazineProjectionDto magazineDto = entry.getValue().getFirst();
+
+                    return new MagazineSubscriptions(
+                            magazineDto.title(),
+                            magazineDto.nameEditor(),
+                            magazineDto.createdAt(),
+                            subscriptionsDtos
+                    );
+                })
+                .collect(Collectors.toList());
+
+        // Retornar la respuesta con las 5 revistas más suscritas
+        return new ReportTopMagazineSubscriptions(topMagazines);
+    }
+
+    public ReportTopMagazineSubscriptions getTop5MagazinesBySubscriptions() {
+        // Obtener las suscripciones activas desde el repositorio
+        List<MagazineProjectionDto> subscriptions = subscriptionRepository.findAllActiveSubscriptionDtos();
+
+        return this.getTopClear(subscriptions);
+    }
+
+    @Transactional(readOnly = true)
+    public ReportTopMagazineSubscriptions getTop5MagazinesBySubscriptionsRange(LocalDate startDate, LocalDate endDate) {
+
+        if (startDate == null || endDate == null) {
+            return this.getTop5MagazinesBySubscriptions();
+        }
+
+        ZoneId zoneId = ZoneId.systemDefault();
+        Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
+        Instant endInstant = endDate.atStartOfDay(zoneId).toInstant();
+
+        // Obtener las suscripciones activas desde el repositorio
+        List<MagazineProjectionDto> subscriptions = subscriptionRepository.findAllActiveSubscriptionDtosBetween(startInstant, endInstant);
+        return this.getTopClear(subscriptions);
 
     }
 

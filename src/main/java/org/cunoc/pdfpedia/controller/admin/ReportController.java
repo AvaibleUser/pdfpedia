@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.TotalReportPaymentPostAdByAnnouncersDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.postAd.PostAdReportTotal;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.ReportTopMagazineSubscriptions;
 import org.cunoc.pdfpedia.domain.dto.dashboard.CountRegisterByRolDto;
 import org.cunoc.pdfpedia.service.admin.ReportService;
 import org.springframework.format.annotation.DateTimeFormat;
@@ -61,8 +62,22 @@ public class ReportController {
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
             @PathVariable Long id
     ){
-        System.out.println("el id es " + id);
         return ResponseEntity.ok(this.reportService.getTotalPaymentsByAdvertisersById(startDate, endDate,id));
+    }
+
+
+    @GetMapping("/prueba")
+    public void prueba(
+    ){
+       this.reportService.prueba();
+    }
+
+    @GetMapping("/top-5-magazines-subscription")
+    public ResponseEntity<ReportTopMagazineSubscriptions> getTop5MagazinesBySubscriptions(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ){
+        return ResponseEntity.ok(this.reportService.getTop5MagazinesBySubscriptionsRange(startDate, endDate));
     }
 
 
