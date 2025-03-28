@@ -13,8 +13,7 @@ jobs:
   deploy:
     name: Cloud Run Deploy
     runs-on: ubuntu-latest
-    environment:
-      name: "${{ github.event.workflow_run.head_branch == 'refs/heads/main' == 'main' && 'prod' || 'dev' }}"
+    environment: "${{ github.event.workflow_run.head_branch == 'main' && 'prod' || 'dev' }}"
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
       # BEGIN - Enviroment setup
@@ -28,7 +27,7 @@ jobs:
         id: determine-env
         run: |
           # Determine environment based on branch
-          if [ "${{ github.ref == 'refs/heads/main' }}" == "main" ]; then
+          if [ "${{ github.event.workflow_run.head_branch }}" == "main" ]; then
             echo "ENV=prod" >> $GITHUB_ENV
           else
             echo "ENV=dev" >> $GITHUB_ENV
