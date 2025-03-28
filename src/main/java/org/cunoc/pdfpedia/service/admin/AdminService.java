@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.admin.MagazineAdminDto;
 import org.cunoc.pdfpedia.domain.dto.admin.UpdateCostMagazineDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.MagazineCostTotalDto;
+import org.cunoc.pdfpedia.domain.dto.announcer.PostAdMount;
 import org.cunoc.pdfpedia.domain.dto.dashboard.AnnouncersDto;
 import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.cunoc.pdfpedia.domain.exception.ValueNotFoundException;
@@ -129,5 +130,16 @@ public class AdminService {
                 .toList();
     }
 
+    public List<PostAdMount> countRegisterByMonthByBetween(LocalDate startDate, LocalDate endDate){
+        if (startDate == null || endDate== null){
+            return this.userRepository.countRegisterByMonth();
+        }
+        ZoneId zoneId = ZoneId.systemDefault();
+        Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
+        Instant endInstant = endDate.atStartOfDay(zoneId).toInstant();
+
+        return this.userRepository.countRegisterByMonthByBetween(startInstant,endInstant);
+
+    }
 
 }

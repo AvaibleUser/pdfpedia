@@ -147,6 +147,13 @@ public class ReportService {
                 .build();
     }
 
+    /**
+     *  reporte de publicaciones de anuncios en un itervalo de tiempo y filtro de tipo de anuncio
+     * @param startDate
+     * @param endDate
+     * @param type
+     * @return
+     */
     public PostAdReportTotal getPostAdReportTotal(LocalDate startDate, LocalDate endDate, Integer type){
         List<AdReportDto> adPostReport = this.paymentService.getPaymentToPostAdByTypeAndBetween(startDate, endDate, type);
         BigDecimal totalAdPost = this.getTotalAdPost(adPostReport);
@@ -291,6 +298,7 @@ public class ReportService {
 
     }
 
+    // limpiar y darle formato al reporte
     public ReportMagazineCommentsDto getTopClearComments(List<MagazineProjectionCommentsDto> comments){
         // Agrupar las suscripciones por revista
         Map<Long, List<MagazineProjectionCommentsDto>> groupedByMagazine = comments.stream()

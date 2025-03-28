@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.admin.MagazineAdminDto;
 import org.cunoc.pdfpedia.domain.dto.admin.UpdateCostMagazineDto;
+import org.cunoc.pdfpedia.domain.dto.announcer.PostAdMount;
 import org.cunoc.pdfpedia.domain.dto.dashboard.AnnouncersDto;
 import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.cunoc.pdfpedia.service.admin.AdminService;
@@ -44,6 +45,15 @@ public class AdminController {
     public ResponseEntity<List<AnnouncersDto>> findAllAnnouncers(){
         List<AnnouncersDto> list = this.adminService.findAllEditors();
         return ResponseEntity.status(HttpStatus.OK).body(list);
+    }
+
+    @GetMapping("/total-registers-month")
+    public ResponseEntity<List<PostAdMount>> findAllAnnouncersMonth(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ){
+        List<PostAdMount> total = this.adminService.countRegisterByMonthByBetween(startDate, endDate);
+        return ResponseEntity.status(OK).body(total);
     }
 
 }
