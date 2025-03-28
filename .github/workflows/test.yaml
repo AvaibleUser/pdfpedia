@@ -36,14 +36,6 @@ jobs:
       - name: Test coverage with jacoco
         run: ./gradlew jacocoTestReport jacocoTestCoverageVerification
 
-      # - name: Upload test results
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: test-results
-      #     path: ${{ github.workspace }}/build/test-results/test
-      #     overwrite: true
-      #     retention-days: 7
-
       - name: Upload test coverage results
         uses: actions/upload-artifact@v4
         with:

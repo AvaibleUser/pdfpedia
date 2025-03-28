@@ -49,8 +49,19 @@ jobs:
       - name: Deploy to Cloud Run
         uses: "google-github-actions/deploy-cloudrun@v2"
         with:
+          service: ${{ secrets.GCP_SERVICE }}
           image: "${{ secrets.GCP_LOCATION }}/pdfpedia-${{ env.ENV  }}:latest"
-          region: ${{ secrets.GCP_REGION }}
-          env_vars: ${{ secrets }}
+          env_vars: |-
+            DB_USER=${{ secrets.DB_USER }}
+            DB_PASS=${{ secrets.DB_PASS }}
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_DATABASE=${{ secrets.DB_DATABASE }}
+
+            EMAIL_ADDRESS=${{ secrets.EMAIL_ADDRESS }}
+            EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}
+
+            STORAGE_CLOUD_NAME=${{ secrets.STORAGE_CLOUD_NAME }}
+            STORAGE_API_KEY=${{ secrets.STORAGE_API_KEY }}
+            STORAGE_API_SECRET=${{ secrets.STORAGE_API_SECRET }}
 
       # END - Deploy

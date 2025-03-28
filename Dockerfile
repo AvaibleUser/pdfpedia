@@ -4,6 +4,4 @@ WORKDIR /app
 
 COPY ./build/libs/*.jar /app/pdfpedia.jar
 
-EXPOSE 8080
-
 ENTRYPOINT ["java", "-jar", "pdfpedia.jar"]
