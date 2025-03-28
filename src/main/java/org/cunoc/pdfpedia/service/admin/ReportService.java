@@ -9,6 +9,10 @@ import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.AdReportEm
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.PaymentPostAdPerAnnouncerDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.TotalReportPaymentPostAdByAnnouncersDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.postAd.PostAdReportTotal;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineCommets.CommentDto;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineCommets.MagazineCommentsDto;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineCommets.MagazineProjectionCommentsDto;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineCommets.ReportMagazineCommentsDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.MagazineProjectionDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.MagazineSubscriptions;
 import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.ReportTopMagazineSubscriptions;
@@ -16,6 +20,7 @@ import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.Subsc
 import org.cunoc.pdfpedia.domain.dto.dashboard.CountRegisterByRolDto;
 import org.cunoc.pdfpedia.domain.entity.monetary.PaymentEntity;
 import org.cunoc.pdfpedia.domain.type.PaymentType;
+import org.cunoc.pdfpedia.repository.interaction.CommentRepository;
 import org.cunoc.pdfpedia.repository.interaction.SubscriptionRepository;
 import org.cunoc.pdfpedia.repository.monetary.PaymentRepository;
 import org.cunoc.pdfpedia.repository.user.UserRepository;
@@ -41,7 +46,9 @@ public class ReportService {
     private final AdminService adminService;
     private final PaymentRepository paymentRepository;
     private final SubscriptionRepository subscriptionRepository;
+    private final CommentRepository commentRepository;
 
+    // funcion para obtner la cantidad de usuarios registrados por rol en un intervalo de tiempo
     public List<CountRegisterByRolDto> findCountRegisterByRol(LocalDate startDate, LocalDate endDate) {
         List<CountRegisterByRolDto> countRegisterByRol = new ArrayList<>();
 
@@ -88,30 +95,35 @@ public class ReportService {
         return countRegisterByRol;
     }
 
+    // funcion para obtener el total de revistas publicadas
     public BigDecimal getTotalAdPost(List<AdReportDto> adPostReport) {
         return adPostReport.stream()
                 .map(AdReportDto::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    // para obtener el total de revistas publicadas incluyendo email del suscriptro
     public BigDecimal getTotalAdPostEmail(List<AdReportEmailDto> adPostReport) {
         return adPostReport.stream()
                 .map(AdReportEmailDto::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    // obtener el total de ingresos en anunciso bloqueados
     public BigDecimal getTotalBlockAd(List<MagazineReportDto> blockAdReport) {
         return blockAdReport.stream()
                 .map(MagazineReportDto::amount)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    // obtener el costo total de almacemanmiento de cada revista segun costo por dia
     public BigDecimal getCostTotal(List<MagazineCostTotalDto> costTotalReport) {
         return costTotalReport.stream()
                 .map(MagazineCostTotalDto::costTotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
+    // obtener la ganancia total ingresos - egresos
     public EarningsReport getTotalReportEarnings(LocalDate startDate, LocalDate endDate){
         List<AdReportDto> adPostReport = this.paymentService.getPaymentToPostAdBetween(startDate, endDate);
         List<MagazineReportDto> blockAdReport = this.paymentService.getPaymentToBlockAdMagazineBetween(startDate, endDate);
@@ -217,7 +229,7 @@ public class ReportService {
 
     @Transactional
     public void prueba(){
-        System.out.println(this.getTop5MagazinesBySubscriptions());
+        System.out.println(this.commentRepository.findAllCommentsDtos());
     }
 
     // limpia el arreglo orrigina y para mejor presentacion
@@ -278,5 +290,69 @@ public class ReportService {
         return this.getTopClear(subscriptions);
 
     }
+
+    public ReportMagazineCommentsDto getTopClearComments(List<MagazineProjectionCommentsDto> comments){
+        // Agrupar las suscripciones por revista
+        Map<Long, List<MagazineProjectionCommentsDto>> groupedByMagazine = comments.stream()
+                .collect(Collectors.groupingBy(MagazineProjectionCommentsDto::magazineId));
+
+        // Para cada revista, generar un objeto MagazineSubscriptions con los detalles requeridos
+        List<MagazineCommentsDto> topMagazines = groupedByMagazine.entrySet().stream()
+                .sorted((entry1, entry2) -> Integer.compare(entry2.getValue().size(), entry1.getValue().size()))  // Ordenar por la cantidad de comentarios
+                .limit(5)  // Tomar solo las 5 con más comentarios
+                .map(entry -> {
+                    List<CommentDto> commentDtos = entry.getValue().stream()
+                            .map(dto -> new CommentDto(
+                                    dto.nameComment(),
+                                    dto.email(),
+                                    dto.content(),
+                                    dto.commentAt()
+                            ))
+                            .collect(Collectors.toList());
+
+                    // Obtener la primera revista del grupo (ya que todas tienen el mismo ID de revista)
+                    MagazineProjectionCommentsDto magazineDto = entry.getValue().getFirst();
+
+                    return new MagazineCommentsDto(
+                            magazineDto.title(),
+                            magazineDto.nameEditor(),
+                            magazineDto.createdAt(),
+                            commentDtos
+                    );
+                })
+                .collect(Collectors.toList());
+
+        // Retornar la respuesta con las 5 revistas más suscritas
+        return ReportMagazineCommentsDto
+                .builder()
+                .magazineCommentsDtoList(topMagazines)
+                .build();
+    }
+
+    public ReportMagazineCommentsDto getTop5MagazinesByComments() {
+        // Obtener las suscripciones activas desde el repositorio
+        List<MagazineProjectionCommentsDto> comments = this.commentRepository.findAllCommentsDtos();
+
+        return this.getTopClearComments(comments);
+    }
+
+    @Transactional(readOnly = true)
+    public ReportMagazineCommentsDto getTop5MagazinesByCommentsRange(LocalDate startDate, LocalDate endDate) {
+
+        if (startDate == null || endDate == null) {
+            return this.getTop5MagazinesByComments();
+        }
+
+        ZoneId zoneId = ZoneId.systemDefault();
+        Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
+        Instant endInstant = endDate.atStartOfDay(zoneId).toInstant();
+
+        // Obtener las suscripciones activas desde el repositorio
+        List<MagazineProjectionCommentsDto> commentsDtos = this.commentRepository.findAllCommentsDtosBetween(startInstant, endInstant);
+        return this.getTopClearComments(commentsDtos);
+
+    }
+
+
 
 }
