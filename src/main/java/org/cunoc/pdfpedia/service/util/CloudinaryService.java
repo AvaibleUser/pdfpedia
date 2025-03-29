@@ -3,6 +3,7 @@ package org.cunoc.pdfpedia.service.util;
 import java.io.IOException;
 import java.util.Map;
 
+import com.cloudinary.utils.ObjectUtils;
 import org.cunoc.pdfpedia.domain.exception.RequestConflictException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +25,15 @@ public class CloudinaryService implements IStorageService {
             String publicId = (String) uploadedFile.get("public_id");
             return cloudinary.url().secure(true).generate(publicId);
         } catch (IOException e) {
+            throw new RequestConflictException("El archivo no se pudo subir, intente subirlo de nuevo");
+        }
+    }
+
+    public String uploadImage(MultipartFile file) {
+        try {
+            var uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
+            return uploadResult.get("url").toString();
+        }catch (IOException e){
             throw new RequestConflictException("El archivo no se pudo subir, intente subirlo de nuevo");
         }
     }

@@ -4,16 +4,13 @@ import static lombok.AccessLevel.PRIVATE;
 
 import java.time.Instant;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -32,15 +29,18 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor(access = PRIVATE)
 public class SubscriptionEntity {
 
-    @Id
+    @EmbeddedId
+    private SubscriptionId id;
+
     @NonNull
     @ManyToOne(optional = false)
+    @MapsId("userId")
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Id
     @NonNull
     @ManyToOne(optional = false)
+    @MapsId("magazineId")
     @JoinColumn(name = "magazine_id", nullable = false)
     private MagazineEntity magazine;
 

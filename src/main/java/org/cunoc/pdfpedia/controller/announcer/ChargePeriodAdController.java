@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.ChargePeriodAdDto;
 import org.cunoc.pdfpedia.domain.dto.announcer.CountAdByTypeDto;
 import org.cunoc.pdfpedia.service.announcer.ChargePeriodAdService;
+import org.cunoc.pdfpedia.service.announcer.IChargePeriodAdService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +19,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ChargePeriodAdController {
 
-    private final ChargePeriodAdService chargePeriodAdService;
+    private final IChargePeriodAdService chargePeriodAdService;
 
     @GetMapping
     public ResponseEntity<List<ChargePeriodAdDto>> getAll() {

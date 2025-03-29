@@ -6,7 +6,7 @@ import org.cunoc.pdfpedia.domain.dto.announcer.AdViewCreateDto;
 import org.cunoc.pdfpedia.domain.dto.announcer.AdViewReportDto;
 import org.cunoc.pdfpedia.domain.dto.announcer.PostAdMount;
 import org.cunoc.pdfpedia.domain.dto.announcer.TotalViewsAdDto;
-import org.cunoc.pdfpedia.service.announcer.AdViewsService;
+import org.cunoc.pdfpedia.service.announcer.IAdViewsService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -23,7 +23,7 @@ import static org.springframework.http.HttpStatus.CREATED;
 @RequiredArgsConstructor
 public class AdViewsController {
 
-    private final AdViewsService adViewsService;
+    private final IAdViewsService adViewsService;
 
     @PostMapping
     @ResponseStatus(CREATED)

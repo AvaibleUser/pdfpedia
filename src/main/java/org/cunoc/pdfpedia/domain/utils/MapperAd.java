@@ -23,6 +23,7 @@ public class MapperAd {
                 .videoUrl(adPostDto.videoUrl())
                 .expiresAt(LocalDateTime.now().plusDays(chargePeriodAd.getDurationDays())) // calcula dias para que expire el anuncio
                 .isDeleted(false)
+                .isActive(true)
                 .build();
     }
 

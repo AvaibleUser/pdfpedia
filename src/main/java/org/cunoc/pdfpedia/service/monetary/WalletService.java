@@ -14,14 +14,16 @@ import java.math.BigDecimal;
 
 @Service
 @RequiredArgsConstructor
-public class WalletService {
+public class WalletService implements IWalletService {
 
     private final WalletRepository walletRepository;
 
+    @Override
     public WalletDto toDto(WalletEntity walletEntity) {
         return new WalletDto(walletEntity.getId(), walletEntity.getBalance());
     }
 
+    @Override
     @Transactional(readOnly = true)
     public WalletDto findUserById(Long userId) {
         WalletEntity walletExist = walletRepository.findAllByUserId(userId)
@@ -30,6 +32,7 @@ public class WalletService {
         return toDto(walletExist);
     }
 
+    @Override
     @Transactional
     public WalletDto updateIncrease(Long id, @Valid WalletDto dto) {
         WalletEntity walletExist = walletRepository.findById(id)
@@ -41,6 +44,7 @@ public class WalletService {
         return this.toDto(updatedWallet);
     }
 
+    @Override
     @Transactional
     public void updateDecrease(Long userId, BigDecimal balance) {
         WalletEntity walletExist = walletRepository.findAllByUserId(userId)

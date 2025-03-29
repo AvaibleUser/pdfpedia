@@ -15,10 +15,11 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ChargePeriodAdService {
+public class ChargePeriodAdService implements IChargePeriodAdService {
 
     private final ChargePeriodAdRepository chargePeriodAdRepository;
 
+    @Override
     public ChargePeriodAdDto toDto(ChargePeriodAdEntity chargePeriodAdEntity) {
         return new ChargePeriodAdDto(
                 chargePeriodAdEntity.getId(),
@@ -28,6 +29,7 @@ public class ChargePeriodAdService {
         );
     }
 
+    @Override
     public List<ChargePeriodAdDto> findAll() {
 
         Iterable<ChargePeriodAdEntity> iterable =  this.chargePeriodAdRepository.findAll();
@@ -37,6 +39,7 @@ public class ChargePeriodAdService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public ChargePeriodAdDto update(Long id, @Valid ChargePeriodAdDto dto) {
         ChargePeriodAdEntity existingEntity = chargePeriodAdRepository.findById(id)
                 .orElseThrow(() -> new ValueNotFoundException("Periodo de vigencia no encontrado"));
@@ -47,6 +50,7 @@ public class ChargePeriodAdService {
         return this.toDto(updatedEntity);
     }
 
+    @Override
     public List<CountAdByTypeDto> getAdCountsByTypeForUser(Long advertiserId) {
         return chargePeriodAdRepository.countAdsByTypeForUser(advertiserId);
     }
