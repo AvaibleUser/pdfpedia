@@ -6,6 +6,8 @@ build/
 !**/src/test/**/build/
 .env
 **/*.env
+.secrets
+build_deploy.yaml
 
 ### STS ###
 .apt_generated
