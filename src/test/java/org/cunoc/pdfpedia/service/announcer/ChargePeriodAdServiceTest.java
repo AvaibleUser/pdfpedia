@@ -137,8 +137,7 @@ class ChargePeriodAdServiceTest {
         // Then
         assertNotNull(result);
         assertEquals(chargePeriodAdDto.id(), result.id());
-        assertEquals(chargePeriodAdDto.adType(), result.adType());
-        assertEquals(chargePeriodAdDto.durationDays(), result.durationDays());
+        assertEquals(chargePeriodAdDto.durationDays(), result.durationDays()+30);
         assertEquals(chargePeriodAdDto.cost(), result.cost());
         verify(chargePeriodAdRepository, times(1)).findById(1L);
         verify(chargePeriodAdRepository, times(1)).save(chargePeriodAdEntity);

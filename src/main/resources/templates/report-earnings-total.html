@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reporte de Ganancias</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+
+        .container {
+            width: 94%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header .left {
+            width: 70%;
+        }
+
+        .header .left h1 {
+            font-size: 24px;
+            margin: 10px 0;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .header .left h2 {
+            font-size: 18px;
+            margin: 5px 0;
+            color: #000;
+        }
+
+        .header .left p {
+            font-size: 14px;
+            margin: 5px 0;
+            color: #000;
+        }
+
+        .header img {
+            width: 150px;
+            height: auto;
+            position: absolute;
+            right: 0;
+            top: 0;
+            object-fit: contain;
+        }
+
+        .report-info {
+            margin-bottom: 20px;
+        }
+
+        .company-info,
+        .report-details {
+            width: 45%;
+            float: left;
+            margin-bottom: 10px;
+        }
+
+        .company-info {
+            margin-right: 10%;
+        }
+
+        .report-details p,
+        .company-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #000;
+        }
+
+        .clearfix {
+            clear: both;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            border: 1px solid #000;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #000;
+            color: #000;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #000;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .font-bold {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Encabezado del reporte -->
+    <div class="header">
+        <div class="left">
+            <h1>Reporte de Ganancias</h1>
+            <h2>Compañía RevistLand</h2>
+        </div>
+        <img
+                th:src="@{${companyLogo}}"
+                src="/image.png"
+                alt="Logo Empresa"
+                class="logo"
+        />
+    </div>
+
+    <!-- Información de la empresa y del reporte -->
+    <div class="report-info">
+        <div class="company-info">
+            <h3>Detalles del Reporte</h3>
+            <p><strong>Fecha del reporte:</strong> <span th:text="${dateReport}">--</span></p>
+            <p><strong>Tipo Reporte:</strong> <span>Reporte de Ganancias</span></p>
+            <p><strong>Descripción:</strong> <span>Consulta las ganancias en un intervalo de tiempo, incluyendo costos, anuncios comprados e ingresos por pagos de editores.</span></p>
+        </div>
+
+        <div class="report-details">
+            <h3>Filtros Aplicados</h3>
+            <p><strong>Rango de fechas:</strong> <span th:text="${range}">---</span></p>
+            <p><strong>Tipo:</strong> <span>No aplica</span></p>
+        </div>
+
+        <div class="clearfix"></div>
+    </div>
+
+    <!-- Tabla de Resumen Total de Ganancias -->
+    <table>
+        <thead>
+        <tr>
+            <th colspan="2" class="text-center font-bold" style="background-color: #f2f2f2;">
+                Resumen Total de Ganancias
+            </th>
+        </tr>
+        <tr>
+            <th>Descripción</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>Total de ingreso por compras de anuncios</td>
+            <td th:text="'Q' + ${report.totalAdPost}">Q0.00</td>
+        </tr>
+        <tr>
+            <td>Total de ingreso por bloqueo de anuncios de editores</td>
+            <td th:text="'Q' + ${report.totalAdBlocks}">Q0.00</td>
+        </tr>
+        <tr>
+            <td class="text-center font-bold">Total de Ingresos</td>
+            <td class="font-bold" th:text="'Q' + ${report.totalIncome}">Q0.00</td>
+        </tr>
+        <tr>
+            <td>Costo total por almacenamiento de revistas</td>
+            <td th:text="'Q' + ${report.totalCostPerDay}">Q0.00</td>
+        </tr>
+        <tr>
+            <td class="text-center font-bold">Total de Egresos</td>
+            <td class="font-bold" th:text="'Q' + ${report.totalCostPerDay}">Q0.00</td>
+        </tr>
+        <tr>
+            <td class="text-center font-bold">Ganancia Total</td>
+            <td class="font-bold" th:text="'Q' + ${report.totalEarnings}">Q0.00</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Tabla de ingresos por anuncios comprados -->
+    <table>
+        <thead>
+        <tr>
+            <th colspan="5" class="text-center font-bold" style="background-color: #f2f2f2;">
+                Detalle de anuncios comprados
+            </th>
+        </tr>
+        <tr>
+            <th>Tipo de anuncio</th>
+            <th>Anunciador</th>
+            <th>Fecha de pago</th>
+            <th>Plan comprado</th>
+            <th>Cantidad</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="ad : ${report.adReportDto}">
+            <td th:text="${ad.adType}">Tipo</td>
+            <td th:text="${ad.username}">Usuario</td>
+            <td th:text="${#dates.format(ad.datePay, 'dd/MM/yyyy HH:mm')}">Fecha</td>
+            <td th:text="${ad.plan} + ' dia(s)'">Plan</td>
+            <td th:text="'Q' + ${ad.amount}">Q0.00</td>
+        </tr>
+        <tr>
+            <td class="text-center font-bold" colspan="4">Total de ingresos por anuncios comprados</td>
+            <td class="font-bold" th:text="'Q' + ${report.totalAdPost}">Q0.00</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Tabla de ingresos por bloqueos de anuncios -->
+    <table>
+        <thead>
+        <tr>
+            <th colspan="4" class="text-center font-bold" style="background-color: #f2f2f2;">
+                Detalle de ingresos por bloqueos de anuncios
+            </th>
+        </tr>
+        <tr>
+            <th>Revista</th>
+            <th>Editor</th>
+            <th>Fecha de pago</th>
+            <th>Cantidad</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${report.magazineReportDto}">
+            <td th:text="${item.title}">Título</td>
+            <td th:text="${item.editor}">Editor</td>
+            <td th:text="${#dates.format(item.datePay, 'dd/MM/yyyy HH:mm')}">Fecha</td>
+            <td th:text="'Q' + ${item.amount}">Q0.00</td>
+        </tr>
+        <tr>
+            <td class="text-center font-bold" colspan="3">Total de ingresos por anuncios bloqueados</td>
+            <td class="font-bold" th:text="'Q' + ${report.totalAdBlocks}">Q0.00</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Tabla de egresos por alojamiento de revistas -->
+    <table>
+        <thead>
+        <tr>
+            <th colspan="5" class="text-center font-bold" style="background-color: #f2f2f2;">
+                Detalle de egresos por alojamiento de Revistas
+            </th>
+        </tr>
+        <tr>
+            <th>Revista</th>
+            <th>Editor</th>
+            <th>Fecha de registro</th>
+            <th>Costo por día</th>
+            <th>Cantidad</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="item : ${report.magazineCostTotalDto}">
+            <td th:text="${item.title}">Título</td>
+            <td th:text="${item.username}">Usuario</td>
+            <td th:text="${#dates.format(item.createdAt, 'dd/MM/yyyy HH:mm')}">Fecha</td>
+            <td th:text="'Q' + ${item.costPerDay}">Q0.00</td>
+            <td th:text="'Q' + ${item.costTotal}">Q0.00</td>
+        </tr>
+        <tr>
+            <td class="text-center font-bold" colspan="4">Total de egresos alojamiento de Revistas</td>
+            <td class="font-bold" th:text="'Q' + ${report.totalCostPerDay}">Q0.00</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Pie de página del reporte -->
+    <div class="footer">
+        <p>Reporte generado automáticamente por el Sistema de Reportes. Todos los derechos reservados © 2025</p>
+    </div>
+</div>
+</body>
+</html>

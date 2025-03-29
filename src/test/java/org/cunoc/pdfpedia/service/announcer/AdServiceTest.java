@@ -9,8 +9,8 @@ import org.cunoc.pdfpedia.domain.utils.MapperAd;
 import org.cunoc.pdfpedia.repository.announcer.AdRepository;
 import org.cunoc.pdfpedia.repository.announcer.ChargePeriodAdRepository;
 import org.cunoc.pdfpedia.repository.user.UserRepository;
-import org.cunoc.pdfpedia.service.monetary.PaymentService;
-import org.cunoc.pdfpedia.service.monetary.WalletService;
+import org.cunoc.pdfpedia.service.monetary.IPaymentService;
+import org.cunoc.pdfpedia.service.monetary.IWalletService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -46,9 +46,9 @@ class AdServiceTest {
     @Mock
     private MapperAd mapperAd;
     @Mock
-    private WalletService walletService;
+    private IWalletService walletService;
     @Mock
-    private PaymentService paymentService;
+    private IPaymentService paymentService;
 
     @InjectMocks
     private AdService adService;
