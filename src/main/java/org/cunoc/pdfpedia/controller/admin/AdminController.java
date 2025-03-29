@@ -7,8 +7,7 @@ import org.cunoc.pdfpedia.domain.dto.admin.MagazineAdminDto;
 import org.cunoc.pdfpedia.domain.dto.admin.UpdateCostMagazineDto;
 import org.cunoc.pdfpedia.domain.dto.announcer.PostAdMount;
 import org.cunoc.pdfpedia.domain.dto.dashboard.AnnouncersDto;
-import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
-import org.cunoc.pdfpedia.service.admin.AdminService;
+import org.cunoc.pdfpedia.service.admin.IAdminService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +24,7 @@ import static org.springframework.http.HttpStatus.OK;
 @RequiredArgsConstructor
 public class AdminController {
 
-    private final AdminService adminService;
+    private final IAdminService adminService;
 
     @GetMapping("/magazines")
     public ResponseEntity<List<MagazineAdminDto>> getAllMagazinesWithParams(@RequestParam boolean costNull,

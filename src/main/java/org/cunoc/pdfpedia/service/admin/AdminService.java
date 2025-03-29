@@ -24,11 +24,12 @@ import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
-public class AdminService {
+public class AdminService implements IAdminService {
 
     private final MagazineRepository magazineRepository;
     private final UserRepository userRepository;
 
+    @Override
     public BigDecimal calculateTotalCost(Instant createdAt, BigDecimal costPerDay,LocalDate startDate, LocalDate endDate) {
 
         LocalDate createdDate = createdAt.atZone(ZoneId.systemDefault()).toLocalDate();;
@@ -48,6 +49,7 @@ public class AdminService {
         return costPerDay.multiply(BigDecimal.valueOf(daysElapsed));
     }
 
+    @Override
     public MagazineAdminDto toDto(MagazineEntity magazineEntity) {
         return MagazineAdminDto
                 .builder()
@@ -60,6 +62,7 @@ public class AdminService {
 
     }
 
+    @Override
     public MagazineCostTotalDto totalDto(MagazineEntity magazineEntity, LocalDate startDate, LocalDate endDate) {
         return MagazineCostTotalDto
                 .builder()
@@ -71,11 +74,13 @@ public class AdminService {
                 .build();
     }
 
-    private boolean hasValidEditor(Long editorId) {
+    @Override
+    public boolean hasValidEditor(Long editorId) {
         return editorId != null && editorId > 0;
     }
 
-    private List<MagazineEntity> fetchMagazines(boolean costNull, Long editorId, boolean asc) {
+    @Override
+    public List<MagazineEntity> fetchMagazines(boolean costNull, Long editorId, boolean asc) {
         Sort sort = Sort.by(asc ? Sort.Direction.ASC : Sort.Direction.DESC, "createdAt");
 
         if (costNull && hasValidEditor(editorId)) {
@@ -90,6 +95,7 @@ public class AdminService {
         return magazineRepository.findAll(sort);
     }
 
+    @Override
     public List<MagazineAdminDto> getAllMagazinesWithParams(boolean costNull, Long editorId, boolean asc) {
         List<MagazineEntity> magazines = fetchMagazines(costNull, editorId, asc);
         return magazines.stream()
@@ -97,6 +103,8 @@ public class AdminService {
                 .toList();
     }
 
+    @Override
+    @Transactional
     public void updateCostMagazine(Long id, UpdateCostMagazineDto updateCostMagazineDto){
         MagazineEntity magazineEntity = magazineRepository.findById(id)
                 .orElseThrow(() -> new ValueNotFoundException("Magazine no encontrado para actalizar el costo"));
@@ -106,10 +114,12 @@ public class AdminService {
         this.magazineRepository.save(magazineEntity);
     }
 
+    @Override
     public  List<AnnouncersDto> findAllEditors(){
         return this.userRepository.findAllByRole_Name("EDITOR", AnnouncersDto.class);
     }
 
+    @Override
     @Transactional
     public List<MagazineCostTotalDto> getAllCostTotalMagazines(LocalDate startDate, LocalDate endDate){
 
@@ -130,6 +140,8 @@ public class AdminService {
                 .toList();
     }
 
+    @Override
+    @Transactional
     public List<PostAdMount> countRegisterByMonthByBetween(LocalDate startDate, LocalDate endDate){
         if (startDate == null || endDate== null){
             return this.userRepository.countRegisterByMonth();

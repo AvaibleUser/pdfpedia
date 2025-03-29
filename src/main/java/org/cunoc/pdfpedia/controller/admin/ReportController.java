@@ -7,9 +7,8 @@ import org.cunoc.pdfpedia.domain.dto.admin.report.postAd.PostAdReportTotal;
 import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineCommets.ReportMagazineCommentsDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.ReportTopMagazineSubscriptions;
 import org.cunoc.pdfpedia.domain.dto.dashboard.CountRegisterByRolDto;
-import org.cunoc.pdfpedia.service.admin.ReportService;
+import org.cunoc.pdfpedia.service.admin.IReportService;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReportController {
 
-    private final ReportService reportService;
+    private final IReportService reportService;
 
     @GetMapping("/count-by-role")
     public ResponseEntity<List<CountRegisterByRolDto>> getCountByRole(
@@ -64,13 +63,6 @@ public class ReportController {
             @PathVariable Long id
     ){
         return ResponseEntity.ok(this.reportService.getTotalPaymentsByAdvertisersById(startDate, endDate,id));
-    }
-
-
-    @GetMapping("/prueba")
-    public void prueba(
-    ){
-       this.reportService.prueba();
     }
 
     @GetMapping("/top-5-magazines-subscription")

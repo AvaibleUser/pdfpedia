@@ -18,13 +18,11 @@ import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.Magaz
 import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.ReportTopMagazineSubscriptions;
 import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.SubscriptionsDto;
 import org.cunoc.pdfpedia.domain.dto.dashboard.CountRegisterByRolDto;
-import org.cunoc.pdfpedia.domain.entity.monetary.PaymentEntity;
-import org.cunoc.pdfpedia.domain.type.PaymentType;
 import org.cunoc.pdfpedia.repository.interaction.CommentRepository;
 import org.cunoc.pdfpedia.repository.interaction.SubscriptionRepository;
 import org.cunoc.pdfpedia.repository.monetary.PaymentRepository;
 import org.cunoc.pdfpedia.repository.user.UserRepository;
-import org.cunoc.pdfpedia.service.monetary.PaymentService;
+import org.cunoc.pdfpedia.service.monetary.IPaymentService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,16 +37,17 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-public class ReportService {
+public class ReportService implements IReportService {
 
     private final UserRepository userRepository;
-    private final PaymentService paymentService;
-    private final AdminService adminService;
+    private final IPaymentService paymentService;
+    private final IAdminService adminService;
     private final PaymentRepository paymentRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final CommentRepository commentRepository;
 
     // funcion para obtner la cantidad de usuarios registrados por rol en un intervalo de tiempo
+    @Override
     public List<CountRegisterByRolDto> findCountRegisterByRol(LocalDate startDate, LocalDate endDate) {
         List<CountRegisterByRolDto> countRegisterByRol = new ArrayList<>();
 
@@ -96,6 +95,7 @@ public class ReportService {
     }
 
     // funcion para obtener el total de revistas publicadas
+    @Override
     public BigDecimal getTotalAdPost(List<AdReportDto> adPostReport) {
         return adPostReport.stream()
                 .map(AdReportDto::amount)
@@ -103,6 +103,7 @@ public class ReportService {
     }
 
     // para obtener el total de revistas publicadas incluyendo email del suscriptro
+    @Override
     public BigDecimal getTotalAdPostEmail(List<AdReportEmailDto> adPostReport) {
         return adPostReport.stream()
                 .map(AdReportEmailDto::amount)
@@ -110,6 +111,7 @@ public class ReportService {
     }
 
     // obtener el total de ingresos en anunciso bloqueados
+    @Override
     public BigDecimal getTotalBlockAd(List<MagazineReportDto> blockAdReport) {
         return blockAdReport.stream()
                 .map(MagazineReportDto::amount)
@@ -117,6 +119,7 @@ public class ReportService {
     }
 
     // obtener el costo total de almacemanmiento de cada revista segun costo por dia
+    @Override
     public BigDecimal getCostTotal(List<MagazineCostTotalDto> costTotalReport) {
         return costTotalReport.stream()
                 .map(MagazineCostTotalDto::costTotal)
@@ -124,6 +127,7 @@ public class ReportService {
     }
 
     // obtener la ganancia total ingresos - egresos
+    @Override
     public EarningsReport getTotalReportEarnings(LocalDate startDate, LocalDate endDate){
         List<AdReportDto> adPostReport = this.paymentService.getPaymentToPostAdBetween(startDate, endDate);
         List<MagazineReportDto> blockAdReport = this.paymentService.getPaymentToBlockAdMagazineBetween(startDate, endDate);
@@ -154,6 +158,7 @@ public class ReportService {
      * @param type
      * @return
      */
+    @Override
     public PostAdReportTotal getPostAdReportTotal(LocalDate startDate, LocalDate endDate, Integer type){
         List<AdReportDto> adPostReport = this.paymentService.getPaymentToPostAdByTypeAndBetween(startDate, endDate, type);
         BigDecimal totalAdPost = this.getTotalAdPost(adPostReport);
@@ -166,6 +171,7 @@ public class ReportService {
 
     }
 
+    @Override
     public TotalReportPaymentPostAdByAnnouncersDto mapperReport(List<PaymentPostAdPerAnnouncerDto> payments,List<AdReportEmailDto> adReports ){
         // Mapeamos los anuncios a cada advertiser
         Map<String, List<AdReportEmailDto>> adReportsByUser = adReports.stream()
@@ -189,6 +195,7 @@ public class ReportService {
     }
 
     @Transactional
+    @Override
     public TotalReportPaymentPostAdByAnnouncersDto getTotalPaymentsByAdvertisers() {
         List<PaymentPostAdPerAnnouncerDto> payments = paymentRepository.findGroupedPaymentsByPaymentType();
         List<AdReportEmailDto> adReports = paymentRepository.findAdReportsByPaymentType();
@@ -197,6 +204,7 @@ public class ReportService {
     }
 
     @Transactional
+    @Override
     public TotalReportPaymentPostAdByAnnouncersDto getTotalPaymentsByAdvertisers(LocalDate startDate, LocalDate endDate) {
         if (startDate == null || endDate == null) {
             return getTotalPaymentsByAdvertisers();
@@ -214,6 +222,7 @@ public class ReportService {
     }
 
     @Transactional
+    @Override
     public TotalReportPaymentPostAdByAnnouncersDto getTotalPaymentsByAdvertisersById(Long id) {
         List<PaymentPostAdPerAnnouncerDto> payments = paymentRepository.findGroupedPaymentsByPaymentTypeByIdUser(id);
         List<AdReportEmailDto> adReports = paymentRepository.findAdReportsByPaymentTypeByIdUser(id);
@@ -222,6 +231,7 @@ public class ReportService {
     }
 
     @Transactional
+    @Override
     public TotalReportPaymentPostAdByAnnouncersDto getTotalPaymentsByAdvertisersById(LocalDate startDate, LocalDate endDate, Long id) {
         if (startDate == null || endDate == null) {
             return getTotalPaymentsByAdvertisersById(id);
@@ -238,12 +248,8 @@ public class ReportService {
 
     }
 
-    @Transactional
-    public void prueba(){
-        System.out.println(this.commentRepository.findAllCommentsDtos());
-    }
-
     // limpia el arreglo orrigina y para mejor presentacion
+    @Override
     public ReportTopMagazineSubscriptions getTopClear(List<MagazineProjectionDto> subscriptions){
         // Agrupar las suscripciones por revista
         Map<Long, List<MagazineProjectionDto>> groupedByMagazine = subscriptions.stream()
@@ -281,6 +287,7 @@ public class ReportService {
                 .build();
     }
 
+    @Override
     public ReportTopMagazineSubscriptions getTop5MagazinesBySubscriptions() {
         // Obtener las suscripciones activas desde el repositorio
         List<MagazineProjectionDto> subscriptions = subscriptionRepository.findAllActiveSubscriptionDtos();
@@ -289,6 +296,7 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public ReportTopMagazineSubscriptions getTop5MagazinesBySubscriptionsRange(LocalDate startDate, LocalDate endDate) {
 
         if (startDate == null || endDate == null) {
@@ -306,6 +314,7 @@ public class ReportService {
     }
 
     // limpiar y darle formato al reporte
+    @Override
     public ReportMagazineCommentsDto getTopClearComments(List<MagazineProjectionCommentsDto> comments){
         // Agrupar las suscripciones por revista
         Map<Long, List<MagazineProjectionCommentsDto>> groupedByMagazine = comments.stream()
@@ -344,6 +353,7 @@ public class ReportService {
                 .build();
     }
 
+    @Override
     public ReportMagazineCommentsDto getTop5MagazinesByComments() {
         // Obtener las suscripciones activas desde el repositorio
         List<MagazineProjectionCommentsDto> comments = this.commentRepository.findAllCommentsDtos();
@@ -352,6 +362,7 @@ public class ReportService {
     }
 
     @Transactional(readOnly = true)
+    @Override
     public ReportMagazineCommentsDto getTop5MagazinesByCommentsRange(LocalDate startDate, LocalDate endDate) {
 
         if (startDate == null || endDate == null) {
@@ -367,7 +378,5 @@ public class ReportService {
         return this.getTopClearComments(commentsDtos);
 
     }
-
-
 
 }

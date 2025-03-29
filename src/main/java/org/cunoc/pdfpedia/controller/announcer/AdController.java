@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.*;
 import org.cunoc.pdfpedia.domain.dto.dashboard.AnnouncersDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.TopEditorDto;
-import org.cunoc.pdfpedia.service.announcer.AdService;
+import org.cunoc.pdfpedia.service.announcer.IAdService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -21,7 +21,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdController {
 
-    private final AdService adService;
+    private final IAdService adService;
 
     @PostMapping()
     public ResponseEntity<AdDto> createAd(@Valid @RequestBody AdPostDto adPostDto, @CurrentUserId long userId){

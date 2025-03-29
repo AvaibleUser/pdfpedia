@@ -21,10 +21,11 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class PaymentService {
+public class PaymentService implements IPaymentService {
 
     private final PaymentRepository paymentRepository;
 
+    @Override
     public AdReportDto toDtoAdReport(PaymentEntity paymentEntity) {
         return AdReportDto
                 .builder()
@@ -36,6 +37,7 @@ public class PaymentService {
                 .build();
     }
 
+    @Override
     public MagazineReportDto toDtoMagazineReport(PaymentEntity paymentEntity) {
         return MagazineReportDto
                 .builder()
@@ -46,6 +48,7 @@ public class PaymentService {
                 .build();
     }
 
+    @Override
     @Transactional
     public void createPaymentPostAd(BigDecimal amount, AdEntity ad){
         PaymentEntity paymentEntity = PaymentEntity
@@ -58,10 +61,12 @@ public class PaymentService {
         paymentRepository.save(paymentEntity);
     }
 
+    @Override
     public List<TotalAmountPaymentByMonthDto> getSumAmountPostAdsByMount(Long userId) {
         return this.paymentRepository.sumAmountAdsByMonth(userId);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<AdReportDto> getPaymentToPostAdBetween(LocalDate startDate, LocalDate endDate){
 
@@ -84,6 +89,7 @@ public class PaymentService {
 
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<MagazineReportDto> getPaymentToBlockAdMagazineBetween(LocalDate startDate, LocalDate endDate){
 
@@ -106,6 +112,7 @@ public class PaymentService {
 
     }
 
+    @Override
     public AdType getTypeFilter(Integer type){
         if (type<0 || type>3) return  null;
         if (type == 1) return AdType.TEXT_IMAGE;
@@ -114,6 +121,7 @@ public class PaymentService {
         return null;
     }
 
+    @Override
     @Transactional
     public List<AdReportDto> getPaymentToPostAdByTypeAndBetween(LocalDate startDate, LocalDate endDate, Integer type){
         AdType adTypeFilter = getTypeFilter(type);
