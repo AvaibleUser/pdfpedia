@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SubscriptionRepository extends JpaRepository<SubscriptionEntity, Long> {
-    Page<SubscriptionEntity> findByUserIdAndIsDeletedFalse(Long userId, Pageable pageable); // Falla si no existe 'userId'
+    Page<SubscriptionEntity> findByUserIdAndIsDeletedFalse(Long userId, Pageable pageable);
 
     boolean existsByUserAndMagazineAndIsDeletedFalse(UserEntity user, MagazineEntity magazine);
 }

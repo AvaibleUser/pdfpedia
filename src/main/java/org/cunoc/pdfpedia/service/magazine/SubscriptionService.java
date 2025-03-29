@@ -6,7 +6,6 @@ import org.cunoc.pdfpedia.domain.entity.interaction.SubscriptionEntity;
 import org.cunoc.pdfpedia.domain.entity.interaction.SubscriptionId;
 import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
-import org.cunoc.pdfpedia.repository.magazine.MagazineIssueRepository;
 import org.cunoc.pdfpedia.repository.magazine.MagazineRepository;
 import org.cunoc.pdfpedia.repository.magazine.SubscriptionRepository;
 import org.cunoc.pdfpedia.repository.user.UserRepository;
