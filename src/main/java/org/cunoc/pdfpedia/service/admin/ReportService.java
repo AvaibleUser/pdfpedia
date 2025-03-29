@@ -275,7 +275,10 @@ public class ReportService {
                 .collect(Collectors.toList());
 
         // Retornar la respuesta con las 5 revistas más suscritas
-        return new ReportTopMagazineSubscriptions(topMagazines);
+        return ReportTopMagazineSubscriptions
+                .builder()
+                .subscriptions(topMagazines)
+                .build();
     }
 
     public ReportTopMagazineSubscriptions getTop5MagazinesBySubscriptions() {

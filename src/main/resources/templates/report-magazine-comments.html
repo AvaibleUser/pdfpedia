@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Revistas Más Comentadas</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      color: #000;
+      margin: 0;
+      padding: 0;
+      background-color: #fff;
+    }
+
+    .container {
+      width: 94%;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #fff;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .header .left {
+      width: 70%;
+    }
+
+    .header .left h1 {
+      font-size: 24px;
+      margin: 10px 0;
+      color: #000;
+      font-weight: bold;
+    }
+
+    .header .left h2 {
+      font-size: 18px;
+      margin: 5px 0;
+      color: #000;
+    }
+
+    .header .left p {
+      font-size: 14px;
+      margin: 5px 0;
+      color: #000;
+    }
+
+    .header img {
+      width: 150px;
+      height: auto;
+      position: absolute;
+      right: 0;
+      top: 0;
+      object-fit: contain;
+    }
+
+    .report-info {
+      margin-bottom: 20px;
+    }
+
+    .company-info,
+    .report-details {
+      width: 45%;
+      float: left;
+      margin-bottom: 10px;
+    }
+
+    .company-info {
+      margin-right: 10%;
+    }
+
+    .report-details p,
+    .company-info p {
+      margin: 5px 0;
+      font-size: 14px;
+      color: #000;
+    }
+
+    .clearfix {
+      clear: both;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      border: 1px solid #000;
+    }
+
+    th, td {
+      padding: 10px;
+      text-align: left;
+      border: 1px solid #000;
+      color: #000;
+    }
+
+    th {
+      background-color: #f2f2f2;
+      font-weight: bold;
+    }
+
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #000;
+    }
+
+    .text-center {
+      text-align: center;
+    }
+
+    .font-bold {
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- Encabezado del reporte -->
+  <div class="header">
+    <div class="left">
+      <h1>Reporte de Revistas Más Comentadas</h1>
+      <h2>Compañía RevistLand</h2>
+    </div>
+    <img
+            th:src="@{${companyLogo}}"
+            src="/image.png"
+            alt="Logo Empresa"
+            class="logo"
+    />
+  </div>
+
+  <!-- Información de la empresa y del reporte -->
+  <div class="report-info">
+    <div class="company-info">
+      <h3>Detalles del Reporte</h3>
+      <p><strong>Fecha del reporte:</strong> <span th:text="${dateReport}">--</span></p>
+      <p><strong>Tipo Reporte:</strong> <span>Top 5 Revistas Más Comentadas</span></p>
+      <p><strong>Descripción:</strong> <span>Consulta las 5 revistas con más comentarios en un intervalo de tiempo. Se incluye un listado de comentarios.</span></p>
+    </div>
+
+    <div class="report-details">
+      <h3>Filtros Aplicados</h3>
+      <p><strong>Rango de fechas:</strong> <span th:text="${range}">---</span></p>
+      <p><strong>Categoría:</strong> <span th:text="${filter} ?: 'No aplica'">No aplica</span></p>
+    </div>
+
+    <div class="clearfix"></div>
+  </div>
+
+  <!-- Tabla de Top revistas más comentadas -->
+  <div th:each="item : ${magazineCommentsDtoList}">
+    <table>
+      <thead>
+      <tr>
+        <th colspan="2">Revista</th>
+        <th >Editor</th>
+        <th>Fecha de registro</th>
+        <th>Cantidad de Comentarios</th>
+      </tr>
+      <tr class="font-bold">
+        <th colspan="2" th:text="${item.title}">Título</th>
+        <th th:text="${item.usernameEditor}">Editor</th>
+        <th th:text="${#dates.format(item.createdAt, 'dd/MM/yyyy HH:mm')}">Fecha</th>
+        <th th:text="${item.comments.size()}">0</th>
+      </tr>
+      <tr>
+        <th colspan="5" class="text-center font-bold" style="background-color: #f2f2f2;">
+          Detalle de Comentarios
+        </th>
+      </tr>
+      <tr>
+        <th>#</th>
+        <th>Suscriptor</th>
+        <th>Email</th>
+        <th>Comentario</th>
+        <th>Fecha de comentario</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="comment, stat : ${item.comments}">
+        <td th:text="${stat.count}">1</td>
+        <td th:text="${comment.usernameComment}">Usuario</td>
+        <td th:text="${comment.emailComment}">Email</td>
+        <td th:text="${comment.contentComment}">Comentario</td>
+        <td th:text="${#dates.format(comment.commentAt, 'dd/MM/yyyy HH:mm')}">Fecha</td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pie de página del reporte -->
+  <div class="footer">
+    <p>Reporte generado automáticamente por el Sistema de Reportes. Todos los derechos reservados © 2025</p>
+  </div>
+</div>
+</body>
+</html>

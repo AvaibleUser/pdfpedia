@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.TotalReportPaymentPostAdByAnnouncersDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.postAd.PostAdReportTotal;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineCommets.ReportMagazineCommentsDto;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.ReportTopMagazineSubscriptions;
 import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -56,6 +58,31 @@ public class ExportReportService {
         templateVariables.put("companyLogo", "https://res.cloudinary.com/ddkp3bobz/image/upload/v1742243659/Yc9SIViERyKTTCs71iDz-g_hfvelz.webp");
 
         return this.pdfService.downloadPdf("report-announcers-post-ad",templateVariables);
+
+    }
+
+    public ResponseEntity<Resource> exportReportTop5MagazineSubscriptions(ReportTopMagazineSubscriptions dto) {
+        Map<String, Object> templateVariables = new HashMap<>();
+
+        templateVariables.put("dateReport", LocalDate.now());
+        templateVariables.put("range", dto.range());
+        templateVariables.put("subscriptions", dto.subscriptions());
+        templateVariables.put("companyLogo", "https://res.cloudinary.com/ddkp3bobz/image/upload/v1742243659/Yc9SIViERyKTTCs71iDz-g_hfvelz.webp");
+
+        return this.pdfService.downloadPdf("report-subscriptions-magazine",templateVariables);
+
+    }
+
+
+    public ResponseEntity<Resource> exportReportTop5MagazineComments(ReportMagazineCommentsDto dto) {
+        Map<String, Object> templateVariables = new HashMap<>();
+
+        templateVariables.put("dateReport", LocalDate.now());
+        templateVariables.put("range", dto.range());
+        templateVariables.put("magazineCommentsDtoList", dto.magazineCommentsDtoList());
+        templateVariables.put("companyLogo", "https://res.cloudinary.com/ddkp3bobz/image/upload/v1742243659/Yc9SIViERyKTTCs71iDz-g_hfvelz.webp");
+
+        return this.pdfService.downloadPdf("report-magazine-comments",templateVariables);
 
     }
 

@@ -6,6 +6,7 @@ import java.util.List;
 
 @Builder(toBuilder = true)
 public record ReportTopMagazineSubscriptions(
-        List<MagazineSubscriptions> subscriptions
+        List<MagazineSubscriptions> subscriptions,
+        String range
 ) {
 }

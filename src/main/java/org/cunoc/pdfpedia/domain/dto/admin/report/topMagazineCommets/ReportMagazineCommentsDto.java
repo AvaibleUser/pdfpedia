@@ -6,6 +6,7 @@ import java.util.List;
 
 @Builder(toBuilder = true)
 public record ReportMagazineCommentsDto(
-        List<MagazineCommentsDto> magazineCommentsDtoList
+        List<MagazineCommentsDto> magazineCommentsDtoList,
+        String range
 ) {
 }

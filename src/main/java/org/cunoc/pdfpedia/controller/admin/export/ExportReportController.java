@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.TotalReportPaymentPostAdByAnnouncersDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.postAd.PostAdReportTotal;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineCommets.ReportMagazineCommentsDto;
+import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.ReportTopMagazineSubscriptions;
 import org.cunoc.pdfpedia.service.admin.export.ExportReportService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -32,5 +34,15 @@ public class ExportReportController {
     @PostMapping("/announcers-post-ad")
     public ResponseEntity<Resource> exportReportAnnouncersPostAd(@RequestBody TotalReportPaymentPostAdByAnnouncersDto dto){
         return this.exportReportService.exportReportAnnouncersPostAd(dto);
+    }
+
+    @PostMapping("/top-5-magazine-subscriptions")
+    public ResponseEntity<Resource> exportReportTop5MagazineSubscriptions(@RequestBody ReportTopMagazineSubscriptions dto){
+        return this.exportReportService.exportReportTop5MagazineSubscriptions(dto);
+    }
+
+    @PostMapping("/top-5-magazine-comments")
+    public ResponseEntity<Resource> exportReportTop5MagazineComments(@RequestBody ReportMagazineCommentsDto dto){
+        return this.exportReportService.exportReportTop5MagazineComments(dto);
     }
 }
