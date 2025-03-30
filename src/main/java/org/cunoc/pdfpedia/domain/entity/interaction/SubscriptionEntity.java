@@ -4,8 +4,6 @@ import static lombok.AccessLevel.PRIVATE;
 
 import java.time.Instant;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;

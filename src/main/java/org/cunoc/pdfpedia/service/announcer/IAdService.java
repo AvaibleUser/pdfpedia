@@ -36,4 +36,6 @@ public interface IAdService {
 
     List<AnnouncersDto> findAllAnnouncers();
 
+    AdDto getRandomAdd();
+
 }

@@ -115,4 +115,9 @@ public class AdController {
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
+    @GetMapping("/random")
+    public AdDto getRandomAdd(){
+        return this.adService.getRandomAdd();
+    }
+
 }

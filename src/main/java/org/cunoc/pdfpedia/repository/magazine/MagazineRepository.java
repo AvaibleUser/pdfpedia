@@ -138,4 +138,7 @@ public interface MagazineRepository extends JpaRepository<MagazineEntity, Long> 
                 AND m.isDeleted = FALSE
                     """)
     List<MagazinePreviewDto> findAllByIsDeletedFalseAndCostPerDayIsNotNull();
+
+    List<MagazineEntity> findTop10ByIsDeletedFalseOrderByCreatedAtDesc();
+
 }

@@ -1,55 +1,70 @@
 package org.cunoc.pdfpedia.service.magazine;
 
 import lombok.RequiredArgsConstructor;
-import org.cunoc.pdfpedia.domain.dto.magazine.MagazineSubscriptionDto;
+import org.cunoc.pdfpedia.domain.dto.interaction.SubscriptionDto;
 import org.cunoc.pdfpedia.domain.entity.interaction.SubscriptionEntity;
 import org.cunoc.pdfpedia.domain.entity.interaction.SubscriptionId;
 import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
+import org.cunoc.pdfpedia.repository.interaction.SubscriptionRepository;
 import org.cunoc.pdfpedia.repository.magazine.MagazineRepository;
-import org.cunoc.pdfpedia.repository.magazine.SubscriptionRepository;
 import org.cunoc.pdfpedia.repository.user.UserRepository;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.data.domain.Pageable;
 
 import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
 public class SubscriptionService {
-    private final MagazineRepository magazineRepository;
+
     private final SubscriptionRepository subscriptionRepository;
     private final UserRepository userRepository;
-
-    @Transactional(readOnly = true)
-    public Page<MagazineSubscriptionDto> getUserSubscriptions(Long userId, Pageable pageable) {
-        Page<SubscriptionEntity> subscriptions = subscriptionRepository.findByUserIdAndIsDeletedFalse(userId, pageable);
-
-        return subscriptions.map(sub -> MagazineSubscriptionDto.fromEntity(sub.getId().getMagazine()));
-
-    }
+    private final MagazineRepository magazineRepository;
 
     @Transactional
-    public void subscribeUserToMagazine(Long userId, Long magazineId) {
-        UserEntity user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
-
+    public SubscriptionDto subscribe(Long idUser, Long magazineId) {
+        UserEntity user = userRepository.findById(idUser)
+                .orElseThrow(() -> new RuntimeException("User not found"));
         MagazineEntity magazine = magazineRepository.findById(magazineId)
-                .orElseThrow(() -> new IllegalArgumentException("Magazine not found with id: " + magazineId));
+                .orElseThrow(() -> new RuntimeException("Magazine not found"));
 
-        if (subscriptionRepository.existsByUserAndMagazineAndIsDeletedFalse(user, magazine)) {
-            throw new IllegalStateException("User is already subscribed to this magazine.");
+        SubscriptionId id = new SubscriptionId(user.getId(), magazine.getId());
+        if (subscriptionRepository.existsById(id)) {
+            throw new RuntimeException("User has already subscribed");
         }
 
-        SubscriptionId subscriptionId = new SubscriptionId(user, magazine);
-
         SubscriptionEntity subscription = SubscriptionEntity.builder()
-                .id(subscriptionId)
+                .id(id)
+                .user(user)
+                .magazine(magazine)
                 .subscribedAt(Instant.now())
                 .isDeleted(false)
                 .build();
-        subscriptionRepository.save(subscription);
+
+
+        return SubscriptionDto.fromEntity(subscriptionRepository.save(subscription));
     }
+
+    @Transactional
+    public SubscriptionDto unsubscribe(Long idUser, Long magazineId) {
+        UserEntity user = userRepository.findById(idUser)
+
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        SubscriptionId id = new SubscriptionId(user.getId(), magazineId);
+        SubscriptionEntity subscription = subscriptionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Subscription not found"));
+
+        subscriptionRepository.delete(subscription);
+        return SubscriptionDto.fromEntity(subscription);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isSubscribed(Long idUser, Long magazineId) {
+        UserEntity user = userRepository.findById(idUser)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        SubscriptionId id = new SubscriptionId(user.getId(), magazineId);
+        return subscriptionRepository.existsById(id);
+    }
+
 }

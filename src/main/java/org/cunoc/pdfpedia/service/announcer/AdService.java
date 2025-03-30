@@ -28,7 +28,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AdService implements IAdService{
+public class AdService implements IAdService {
 
     private final AdRepository adRepository;
     private final UserRepository userRepository;
@@ -70,7 +70,7 @@ public class AdService implements IAdService{
 
     @Override
     public List<AdDto> findAllActiveByUserId(LocalDate startDate, LocalDate endDate, Long userId) {
-        if (startDate == null && endDate == null){
+        if (startDate == null && endDate == null) {
             return this.adRepository.findAllByAdvertiserIdAndIsActiveTrueOrderByExpiresAtDesc(userId)
                     .stream()
                     .map(this.mapperAd::toDto)
@@ -148,7 +148,7 @@ public class AdService implements IAdService{
 
     @Override
     public TotalTarjertDto getTotalPostAd(LocalDate startDate, LocalDate endDate) {
-        if (startDate == null && endDate == null){
+        if (startDate == null && endDate == null) {
             return TotalTarjertDto
                     .builder()
                     .total(this.adRepository.count())
@@ -165,8 +165,8 @@ public class AdService implements IAdService{
     }
 
     @Override
-    public TopEditorDto getTopPostAd(LocalDate startDate, LocalDate endDate){
-        if (startDate == null && endDate == null){
+    public TopEditorDto getTopPostAd(LocalDate startDate, LocalDate endDate) {
+        if (startDate == null && endDate == null) {
             UserEntity editor = this.adRepository
                     .findAllByIsDeletedFalseOrderByAdvertiser(PageRequest.of(0, 1))
                     .stream()
@@ -198,7 +198,7 @@ public class AdService implements IAdService{
     @Override
     public List<PostAdMount> getAdCountsByMonth(LocalDate startDate, LocalDate endDate) {
 
-        if (startDate == null && endDate == null){
+        if (startDate == null && endDate == null) {
             return this.adRepository.countAdsByMonth();
         }
 
@@ -219,8 +219,16 @@ public class AdService implements IAdService{
     }
 
     @Override
-    public  List<AnnouncersDto> findAllAnnouncers(){
+    public List<AnnouncersDto> findAllAnnouncers() {
         return this.userRepository.findAllByRole_Name("ANNOUNCER", AnnouncersDto.class);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public AdDto getRandomAdd() {
+        var result = adRepository.findRandomAd()
+                .orElseThrow(() -> new RuntimeException("Didnt find add"));
+
+        return mapperAd.toDto(result);
+    }
 }

@@ -46,7 +46,7 @@ public class MagazineController {
     @GetMapping(params = "type=published")
     @RolesAllowed("EDITOR")
     public List<?> findEditorMagazines(@CurrentUserId @Positive long editorId,
-            @RequestParam(defaultValue = "true") boolean complete) {
+                                       @RequestParam(defaultValue = "true") boolean complete) {
         if (complete) {
             return magazineService.findEditorMagazines(editorId);
         }
@@ -63,7 +63,7 @@ public class MagazineController {
     @RolesAllowed("EDITOR")
     @ResponseStatus(CREATED)
     public MinimalMagazineDto createMagazine(@CurrentUserId @Positive long editorId,
-            @RequestBody @Valid AddMagazineDto magazine) {
+                                             @RequestBody @Valid AddMagazineDto magazine) {
         return magazineService.saveMagazine(editorId, magazine);
     }
 
@@ -71,7 +71,7 @@ public class MagazineController {
     @RolesAllowed("EDITOR")
     @ResponseStatus(CREATED)
     public MinimalMagazineDto updateMagazine(@CurrentUserId @Positive long editorId, @PathVariable @Positive long id,
-            @RequestBody @Valid UpdateMagazineDto magazine) {
+                                             @RequestBody @Valid UpdateMagazineDto magazine) {
         return magazineService.updateMagazine(editorId, id, magazine);
     }
 
@@ -111,5 +111,15 @@ public class MagazineController {
     @GetMapping("/{id}")
     public MagazineItemDto getMagazine(@PathVariable Long id) {
         return magazineService.getMagazineById(id);
+    }
+
+    @GetMapping("/my-subscriptions")
+    public List<MagazineItemDto> getMagazine(@CurrentUserId @Positive long userId) {
+        return magazineService.getUserMagazines(userId);
+    }
+
+    @GetMapping("/newest")
+    public List<MagazineItemDto> getNewestMagazines() {
+        return magazineService.getNewestMagazines();
     }
 }

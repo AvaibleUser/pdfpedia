@@ -38,4 +38,8 @@ public interface IMagazineService {
     MinimalMagazineDto updateMagazine(long editorId, long id, UpdateMagazineDto magazine);
 
     void deleteMagazine(long editorId, long id);
+
+    List<MagazineItemDto> getUserMagazines(Long idUser);
+
+    List<MagazineItemDto> getNewestMagazines();
 }

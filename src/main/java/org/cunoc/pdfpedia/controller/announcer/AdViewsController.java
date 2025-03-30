@@ -19,7 +19,7 @@ import java.util.List;
 import static org.springframework.http.HttpStatus.CREATED;
 
 @RestController
-@RequestMapping("/v1/announcers/views")
+@RequestMapping("/v1/ads/views")
 @RequiredArgsConstructor
 public class AdViewsController {
 
@@ -50,6 +50,4 @@ public class AdViewsController {
         List<AdViewReportDto> report = adViewsService.getReportViews(startDate, endDate, userId);
         return ResponseEntity.ok(report);
     }
-
-
 }

@@ -1,6 +1,7 @@
 package org.cunoc.pdfpedia.repository.interaction;
 
 import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.MagazineProjectionDto;
+import org.cunoc.pdfpedia.domain.dto.magazine.MagazineItemDto;
 import org.cunoc.pdfpedia.domain.entity.interaction.SubscriptionEntity;
 import org.cunoc.pdfpedia.domain.entity.interaction.SubscriptionId;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -35,4 +36,19 @@ public interface SubscriptionRepository extends JpaRepository<SubscriptionEntity
         ORDER BY s.magazine.id
     """)
     List<MagazineProjectionDto> findAllActiveSubscriptionDtosBetween(@Param("startDate") Instant startDate, @Param("endDate") Instant endDate);
+
+    @Query("SELECT new org.cunoc.pdfpedia.domain.dto.magazine.MagazineItemDto(" +
+            "m.id, m.title, m.description, " +
+            "new org.cunoc.pdfpedia.domain.dto.category.CategoryDto(" +
+            "   m.category.id, m.category.name, m.category.description, " +
+            "   m.category.createdAt, m.category.updatedAt), " +
+            "new org.cunoc.pdfpedia.domain.dto.user.EditorDto(" +
+            "   m.editor.id, m.editor.username, m.editor.email, " +
+            "new  org.cunoc.pdfpedia.domain.dto.magazine.EditorProfileDto(" +
+            "m.editor.id, m.editor.profile.firstname, m.editor.profile.lastname)), " +
+            "SIZE(m.likes), m.disableLikes, m.disableComments, m.disableSuscriptions) " +
+            "FROM subscription s " +
+            "JOIN s.magazine m " +
+            "WHERE s.user.id = :userId AND s.isDeleted = false")
+    List<MagazineItemDto> findUserMagazines(@Param("userId") Long userId);
 }

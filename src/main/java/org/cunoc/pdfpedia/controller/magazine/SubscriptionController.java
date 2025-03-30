@@ -1,30 +1,30 @@
 package org.cunoc.pdfpedia.controller.magazine;
 
 import lombok.RequiredArgsConstructor;
-import org.cunoc.pdfpedia.domain.dto.magazine.MagazineSubscriptionDto;
+import org.cunoc.pdfpedia.domain.dto.interaction.SubscriptionDto;
 import org.cunoc.pdfpedia.service.magazine.SubscriptionService;
-import org.springframework.data.domain.Page;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.data.domain.Pageable;
+import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/magazines")
+@RequestMapping("/v1/magazines/{magazineId}")
 @RequiredArgsConstructor
 public class SubscriptionController {
 
     private final SubscriptionService subscriptionService;
 
-    @GetMapping("/subscription/{userId}")
-    public Page<MagazineSubscriptionDto> getUserSubscriptions(@PathVariable Long userId, Pageable pageable) {
-        return subscriptionService.getUserSubscriptions(userId, pageable);
+    @PostMapping("/subscribe")
+    public SubscriptionDto subscribe(@PathVariable Long magazineId, @CurrentUserId long userId) {
+        return subscriptionService.subscribe(userId, magazineId);
     }
 
-    @PostMapping("/{magazineId}/subscription/{userId}")
-    public void subscribeUserToMagazine(@PathVariable Long magazineId, @PathVariable Long userId) {
-        subscriptionService.subscribeUserToMagazine(userId, magazineId);
+    @DeleteMapping("/subscribe")
+    public SubscriptionDto unsubscribe(@PathVariable Long magazineId, @CurrentUserId long userId) {
+        return subscriptionService.unsubscribe(userId, magazineId);
+    }
+
+    @GetMapping("/subscribed")
+    public Boolean isSubscribed(@PathVariable Long magazineId, @CurrentUserId long userId) {
+        return subscriptionService.isSubscribed(userId, magazineId);
     }
 }

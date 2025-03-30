@@ -5,6 +5,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -17,12 +18,14 @@ import org.cunoc.pdfpedia.domain.dto.magazine.MagazineEditorPreviewDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.MinimalMagazineDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.TopEditorDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.UpdateMagazineDto;
+import org.cunoc.pdfpedia.domain.entity.interaction.SubscriptionEntity;
 import org.cunoc.pdfpedia.domain.entity.magazine.CategoryEntity;
 import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.cunoc.pdfpedia.domain.entity.magazine.TagEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
 import org.cunoc.pdfpedia.domain.exception.BadRequestException;
 import org.cunoc.pdfpedia.domain.exception.ValueNotFoundException;
+import org.cunoc.pdfpedia.repository.interaction.SubscriptionRepository;
 import org.cunoc.pdfpedia.repository.magazine.CategoryRepository;
 import org.cunoc.pdfpedia.repository.magazine.MagazineRepository;
 import org.cunoc.pdfpedia.repository.magazine.TagRepository;
@@ -44,6 +47,7 @@ public class MagazineService implements IMagazineService {
     private final MagazineRepository magazineRepository;
     private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
+    private final SubscriptionRepository subscriptionRepository;
 
     @Override
     public MagazineDto findEditorMagazine(long editorId, long id) {
@@ -227,6 +231,17 @@ public class MagazineService implements IMagazineService {
         return magazineRepository.countMagazineByMonthByBetween(startInstant, endInstant);
     }
 
+    public List<MagazineItemDto> getUserMagazines(Long idUser) {
+        return subscriptionRepository.findUserMagazines(idUser);
+    }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<MagazineItemDto> getNewestMagazines() {
+        List<MagazineEntity> newestMagazines = magazineRepository.findTop10ByIsDeletedFalseOrderByCreatedAtDesc();
+        return newestMagazines.stream()
+                .map(MagazineItemDto::fromEntity)
+                .collect(Collectors.toList());
+    }
 
 }
