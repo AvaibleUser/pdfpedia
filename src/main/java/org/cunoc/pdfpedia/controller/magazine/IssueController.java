@@ -42,9 +42,9 @@ public class IssueController {
     @RolesAllowed("EDITOR")
     @ResponseStatus(CREATED)
     public MagazineIssueDto createIssue(@CurrentUserId @Positive long editorId, @PathVariable @Positive long magazineId,
-            @RequestPart("pdf") MultipartFile imageFile, @RequestBody IssueTitleDto issue) {
+            @RequestPart("pdf") MultipartFile imageFile, @RequestPart(name = "title", required = false) String title) {
         String pdfUrl = storageService.uploadFile(imageFile);
-        return issueService.saveIssue(editorId, magazineId, pdfUrl, issue);
+        return issueService.saveIssue(editorId, magazineId, pdfUrl, new IssueTitleDto(title));
     }
 
     @PutMapping("/{id}")

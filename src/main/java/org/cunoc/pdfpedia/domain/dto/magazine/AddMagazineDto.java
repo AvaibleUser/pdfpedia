@@ -16,6 +16,7 @@ import lombok.Builder;
 public record AddMagazineDto(
         @NotBlank String title,
         @NotBlank String description,
+        @JsonFormat(pattern = "yyyy-MM-dd") LocalDate createdAt,
         @JsonFormat(pattern = "yyyy-MM-dd") @Future LocalDate adBlockingExpirationDate,
         boolean disableLikes,
         boolean disableComments,

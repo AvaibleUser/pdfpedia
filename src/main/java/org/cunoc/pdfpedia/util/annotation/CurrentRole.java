@@ -11,7 +11,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 @Target({ ElementType.PARAMETER, ElementType.TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@AuthenticationPrincipal(expression = "@userRepository.findById(#this.getSubject()).get().getRole().getName()")
+@AuthenticationPrincipal(expression = "#this.getAuthorities().get(0).getAuthority()")
 public @interface CurrentRole {
 
 }
