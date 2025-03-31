@@ -56,7 +56,7 @@ public class IssueService implements IIssueService {
 
         MagazineIssueEntity issue = issueRepository.save(MagazineIssueEntity.builder()
                 .magazine(magazine)
-                .title(newIssue.title().filter(StringUtils::isBlank).orElse(null))
+                .title(newIssue.title().filter(StringUtils::isNotBlank).orElse(null))
                 .pdfUrl(pdfUrl)
                 .build());
 

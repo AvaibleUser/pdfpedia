@@ -12,6 +12,7 @@ import org.cunoc.pdfpedia.domain.dto.magazine.MagazineDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.MinimalMagazineDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.TopEditorDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.MagazineItemDto;
+import org.cunoc.pdfpedia.domain.dto.magazine.UpdateMagazineBlockDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.UpdateMagazineDto;
 import org.cunoc.pdfpedia.service.magazine.IMagazineService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
@@ -22,6 +23,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -73,6 +75,13 @@ public class MagazineController {
     public MinimalMagazineDto updateMagazine(@CurrentUserId @Positive long editorId, @PathVariable @Positive long id,
                                              @RequestBody @Valid UpdateMagazineDto magazine) {
         return magazineService.updateMagazine(editorId, id, magazine);
+    }
+
+    @PatchMapping("/{id}/ads")
+    @RolesAllowed("EDITOR")
+    public MinimalMagazineDto updateMagazineAds(@CurrentUserId @Positive long editorId, @PathVariable @Positive long id,
+            @RequestBody @Valid UpdateMagazineBlockDto magazine) {
+        return magazineService.updateMagazineAds(editorId, id, magazine);
     }
 
     @DeleteMapping("/{id}")

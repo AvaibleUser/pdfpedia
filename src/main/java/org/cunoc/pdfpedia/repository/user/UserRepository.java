@@ -53,7 +53,4 @@ public interface UserRepository extends JpaRepository<UserEntity, Long> {
     ORDER BY TO_CHAR(a.createdAt, 'MM') DESC
     """)
     List<PostAdMount> countRegisterByMonth();
-
-
-
 }

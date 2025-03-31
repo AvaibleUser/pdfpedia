@@ -1,20 +1,21 @@
 package org.cunoc.pdfpedia.repository.monetary;
 
-import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.AdReportDto;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.AdReportEmailDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.PaymentPostAdPerAnnouncerDto;
 import org.cunoc.pdfpedia.domain.dto.monetary.TotalAmountPaymentByMonthDto;
+import org.cunoc.pdfpedia.domain.dto.report.EditorReportData.ReportRow;
+import org.cunoc.pdfpedia.domain.dto.report.ReportAggregateData;
 import org.cunoc.pdfpedia.domain.entity.monetary.PaymentEntity;
 import org.cunoc.pdfpedia.domain.type.AdType;
 import org.cunoc.pdfpedia.domain.type.PaymentType;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.time.Instant;
-import java.util.List;
 
 @Repository
 public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
@@ -237,7 +238,57 @@ public interface PaymentRepository extends JpaRepository<PaymentEntity, Long> {
             @Param("advertiserId") Long advertiserId
     );
 
+    @Query("""
+            SELECT new org.cunoc.pdfpedia.domain.dto.report.PaymentReportRow(
+                p.paidAt,
+                m.editor.username,
+                m.title,
+                p.amount
+            )
+            FROM payment p
+                JOIN p.magazine m
+            WHERE (:magazineId IS NULL OR m.id = :magazineId)
+                AND p.paymentType = 'BLOCK_ADS'
+                AND m.editor.id = :editorId
+                AND (CAST(:startDate AS LocalDate) IS NULL
+                    OR CAST(p.paidAt AS LocalDate) >= :startDate)
+                AND (CAST(:endDate AS LocalDate) IS NULL
+                    OR CAST(p.paidAt AS LocalDate) <= :endDate)
+                AND m.isDeleted = FALSE
+                AND p.isDeleted = FALSE
+            ORDER BY p.paidAt DESC
+            """)
+    List<ReportRow> reportPaymentsByMagazineIdAndBetween(@Param("editorId") Long editorId,
+            @Param("magazineId") Long magazineId, @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 
-
-
+    @Query("""
+            SELECT new org.cunoc.pdfpedia.domain.dto.report.ReportAggregateData(
+                (SELECT SUM(p.amount) FROM payment p
+                    JOIN p.magazine m
+                WHERE (:magazineId IS NULL OR m.id = :magazineId)
+                    AND p.paymentType = 'BLOCK_ADS'
+                    AND m.editor.id = :editorId
+                    AND (CAST(:startDate AS LocalDate) IS NULL
+                        OR CAST(p.paidAt AS LocalDate) >= :startDate)
+                    AND (CAST(:endDate AS LocalDate) IS NULL
+                        OR CAST(p.paidAt AS LocalDate) <= :endDate)
+                    AND m.isDeleted = FALSE),
+                (SELECT AVG(amount) FROM (SELECT SUM(p.amount) AS amount FROM payment p
+                        JOIN p.magazine m
+                    WHERE (:magazineId IS NULL)
+                        AND p.paymentType = 'BLOCK_ADS'
+                        AND m.editor.id = :editorId
+                        AND (CAST(:startDate AS LocalDate) IS NULL
+                            OR CAST(p.paidAt AS LocalDate) >= :startDate)
+                        AND (CAST(:endDate AS LocalDate) IS NULL
+                            OR CAST(p.paidAt AS LocalDate) <= :endDate)
+                        AND m.isDeleted = FALSE
+                        AND p.isDeleted = FALSE
+                    GROUP BY m.id))
+                )
+            """)
+    ReportAggregateData aggregatePaymentsByMagazineIdAndBetween(@Param("editorId") Long editorId,
+            @Param("magazineId") Long magazineId, @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 }

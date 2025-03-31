@@ -7,4 +7,8 @@ import lombok.Builder;
 @Builder(toBuilder = true)
 public record IssueTitleDto(
         Optional<String> title) {
+
+    public IssueTitleDto(String title) {
+        this(Optional.of(title));
+    }
 }

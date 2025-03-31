@@ -1,16 +1,19 @@
 package org.cunoc.pdfpedia.repository.interaction;
 
+import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.MagazineProjectionDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.MagazineItemDto;
+import org.cunoc.pdfpedia.domain.dto.report.EditorReportData.ReportRow;
+import org.cunoc.pdfpedia.domain.dto.report.ReportAggregateData;
 import org.cunoc.pdfpedia.domain.entity.interaction.SubscriptionEntity;
 import org.cunoc.pdfpedia.domain.entity.interaction.SubscriptionId;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import java.time.Instant;
-import java.util.List;
 
 @Repository
 public interface SubscriptionRepository extends JpaRepository<SubscriptionEntity, SubscriptionId> {
@@ -51,4 +54,55 @@ public interface SubscriptionRepository extends JpaRepository<SubscriptionEntity
             "JOIN s.magazine m " +
             "WHERE s.user.id = :userId AND s.isDeleted = false")
     List<MagazineItemDto> findUserMagazines(@Param("userId") Long userId);
+
+    @Query("""
+            SELECT NEW org.cunoc.pdfpedia.domain.dto.report.SubscriptionReportRow(
+                s.user.username,
+                s.subscribedAt,
+                s.isDeleted,
+                s.magazine.title,
+                s.magazine.createdAt,
+                s.magazine.disableSuscriptions
+            )
+            FROM subscription s
+                JOIN s.magazine m
+            WHERE (:magazineId IS NULL OR m.id = :magazineId)
+                AND m.editor.id = :editorId
+                AND (CAST(:startDate AS LocalDate) IS NULL
+                    OR CAST(s.subscribedAt AS LocalDate) >= :startDate)
+                AND (CAST(:endDate AS LocalDate) IS NULL
+                    OR CAST(s.subscribedAt AS LocalDate) <= :endDate)
+                AND m.isDeleted = FALSE
+            ORDER BY s.subscribedAt DESC
+            """)
+    List<ReportRow> reportSubscriptionsByMagazineIdAndBetween(@Param("editorId") Long editorId,
+            @Param("magazineId") Long magazineId, @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
+
+    @Query("""
+            SELECT NEW org.cunoc.pdfpedia.domain.dto.report.ReportAggregateData(
+                (SELECT COUNT(s) FROM subscription s
+                    JOIN s.magazine m
+                WHERE (:magazineId IS NULL OR m.id = :magazineId)
+                    AND m.editor.id = :editorId
+                    AND (CAST(:startDate AS LocalDate) IS NULL
+                        OR CAST(s.subscribedAt AS LocalDate) >= :startDate)
+                    AND (CAST(:endDate AS LocalDate) IS NULL
+                        OR CAST(s.subscribedAt AS LocalDate) <= :endDate)
+                    AND m.isDeleted = FALSE),
+                (SELECT AVG(count) FROM (SELECT COUNT(s) AS count FROM subscription s
+                        JOIN s.magazine m
+                    WHERE (:magazineId IS NULL)
+                        AND m.editor.id = :editorId
+                        AND (CAST(:startDate AS LocalDate) IS NULL
+                            OR CAST(s.subscribedAt AS LocalDate) >= :startDate)
+                        AND (CAST(:endDate AS LocalDate) IS NULL
+                            OR CAST(s.subscribedAt AS LocalDate) <= :endDate)
+                        AND m.isDeleted = FALSE
+                    GROUP BY m.id))
+            )
+            """)
+    ReportAggregateData aggregateSubscriptionsByMagazineIdAndBetween(@Param("editorId") Long editorId,
+            @Param("magazineId") Long magazineId, @Param("startDate") LocalDate startDate,
+            @Param("endDate") LocalDate endDate);
 }

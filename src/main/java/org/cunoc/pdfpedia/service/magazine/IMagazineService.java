@@ -13,6 +13,7 @@ import org.cunoc.pdfpedia.domain.dto.magazine.MinimalMagazineDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.TopEditorDto;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.cunoc.pdfpedia.domain.dto.magazine.UpdateMagazineBlockDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.UpdateMagazineDto;
 
 public interface IMagazineService {
@@ -36,6 +37,8 @@ public interface IMagazineService {
     MinimalMagazineDto saveMagazine(long editorId, AddMagazineDto magazine);
 
     MinimalMagazineDto updateMagazine(long editorId, long id, UpdateMagazineDto magazine);
+
+    MinimalMagazineDto updateMagazineAds(long editorId, long id, UpdateMagazineBlockDto magazine);
 
     void deleteMagazine(long editorId, long id);
 
