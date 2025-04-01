@@ -8,7 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IssueRepository extends JpaRepository<MagazineIssueEntity, Long> {
 
-    <T> Optional<T> findByIdAndMagazineId(long id, long magazineId, Class<T> type);
+    <T> Optional<T> findByIdAndMagazineIdAndIsDeletedFalse(long id, long magazineId, Class<T> type);
 
     <T> Optional<T> findByIdAndMagazineIdAndMagazineEditorIdAndIsDeletedFalse(long id, long magazineId, long editorId, Class<T> type);
 
