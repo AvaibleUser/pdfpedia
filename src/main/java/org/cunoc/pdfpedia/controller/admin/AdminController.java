@@ -1,6 +1,7 @@
 package org.cunoc.pdfpedia.controller.admin;
 
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.admin.MagazineAdminDto;
@@ -26,6 +27,7 @@ public class AdminController {
     private final IAdminService adminService;
 
     @GetMapping("/magazines")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<List<MagazineAdminDto>> getAllMagazinesWithParams(@RequestParam boolean costNull,
                                                                  @RequestParam Long editorId,
                                                                  @RequestParam boolean asc) {
@@ -35,17 +37,20 @@ public class AdminController {
 
     @PutMapping("{id}")
     @ResponseStatus(OK)
+    @RolesAllowed("ADMIN")
     public void updateCostMagazine(@PathVariable Long id, @Valid @RequestBody UpdateCostMagazineDto updateCostMagazineDto) {
         this.adminService.updateCostMagazine(id, updateCostMagazineDto);
     }
 
     @GetMapping("/all-editors")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<List<AnnouncersDto>> findAllAnnouncers(){
         List<AnnouncersDto> list = this.adminService.findAllEditors();
         return ResponseEntity.status(HttpStatus.OK).body(list);
     }
 
     @GetMapping("/total-registers-month")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<List<PostAdMount>> findAllAnnouncersMonth(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate

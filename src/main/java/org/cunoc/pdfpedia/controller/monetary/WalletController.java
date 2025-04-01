@@ -1,5 +1,6 @@
 package org.cunoc.pdfpedia.controller.monetary;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.monetary.WalletDto;
@@ -15,11 +16,13 @@ public class WalletController {
     private final IWalletService walletService;
 
     @GetMapping("/byUser")
+    @RolesAllowed({"ANNOUNCER", "EDITOR", "ADMIN"})
     public ResponseEntity<WalletDto> getWalletByUserId(@CurrentUserId long userId) {
         return ResponseEntity.ok(this.walletService.findUserById(userId));
     }
 
     @PutMapping("/{id}")
+    @RolesAllowed({"ANNOUNCER", "EDITOR"})
     public ResponseEntity<WalletDto> update(@PathVariable Long id, @Valid @RequestBody WalletDto dto) {
         return ResponseEntity.ok(this.walletService.updateIncrease(id, dto));
     }

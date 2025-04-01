@@ -1,6 +1,7 @@
 package org.cunoc.pdfpedia.controller.monetary;
 
 
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.monetary.TotalAmountPaymentByMonthDto;
 import org.cunoc.pdfpedia.service.monetary.IPaymentService;
@@ -21,6 +22,7 @@ public class PaymentController {
     private final IPaymentService paymentService;
 
     @GetMapping("/investment")
+    @RolesAllowed({"ANNOUNCER", "EDITOR", "ADMIN"})
     public ResponseEntity<List<TotalAmountPaymentByMonthDto>> getAllPostAdMount(@CurrentUserId long userId){
         return ResponseEntity.status(HttpStatus.OK).body(this.paymentService.getSumAmountPostAdsByMount(userId));
     }

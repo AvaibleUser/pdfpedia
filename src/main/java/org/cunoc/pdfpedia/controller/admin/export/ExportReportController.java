@@ -1,5 +1,6 @@
 package org.cunoc.pdfpedia.controller.admin.export;
 
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.TotalReportPaymentPostAdByAnnouncersDto;
@@ -22,26 +23,31 @@ public class ExportReportController {
     private final ExportReportService exportReportService;
 
     @PostMapping("/earning")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<Resource> exportReportEarnings(@RequestBody EarningsReport earningsReport){
         return this.exportReportService.exportReportEarningsTotal(earningsReport);
     }
 
     @PostMapping("/post-ad")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<Resource> exportReportPostAd(@RequestBody PostAdReportTotal postAdReportTotal){
         return this.exportReportService.exportReportPostAd(postAdReportTotal);
     }
 
     @PostMapping("/announcers-post-ad")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<Resource> exportReportAnnouncersPostAd(@RequestBody TotalReportPaymentPostAdByAnnouncersDto dto){
         return this.exportReportService.exportReportAnnouncersPostAd(dto);
     }
 
     @PostMapping("/top-5-magazine-subscriptions")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<Resource> exportReportTop5MagazineSubscriptions(@RequestBody ReportTopMagazineSubscriptions dto){
         return this.exportReportService.exportReportTop5MagazineSubscriptions(dto);
     }
 
     @PostMapping("/top-5-magazine-comments")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<Resource> exportReportTop5MagazineComments(@RequestBody ReportMagazineCommentsDto dto){
         return this.exportReportService.exportReportTop5MagazineComments(dto);
     }

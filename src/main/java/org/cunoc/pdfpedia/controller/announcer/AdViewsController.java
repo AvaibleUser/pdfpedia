@@ -1,5 +1,6 @@
 package org.cunoc.pdfpedia.controller.announcer;
 
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.AdViewCreateDto;
@@ -32,16 +33,19 @@ public class AdViewsController {
     }
 
     @GetMapping("/total")
+    @RolesAllowed("ANNOUNCER")
     public ResponseEntity<TotalViewsAdDto> getTotal(@CurrentUserId long userId) {
        return ResponseEntity.status(HttpStatus.OK).body(this.adViewsService.getTotalViews(userId));
     }
 
     @GetMapping("/views-count-mount")
+    @RolesAllowed("ANNOUNCER")
     public ResponseEntity<List<PostAdMount>> getAllPostAdMount(@CurrentUserId long userId){
         return ResponseEntity.status(HttpStatus.OK).body(this.adViewsService.getPostMount(userId));
     }
 
     @GetMapping("/report-views")
+    @RolesAllowed("ANNOUNCER")
     public ResponseEntity<List<AdViewReportDto>> getReportViews(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
