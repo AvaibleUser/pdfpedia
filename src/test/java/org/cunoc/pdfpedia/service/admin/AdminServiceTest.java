@@ -15,17 +15,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Sort;
 
 import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+
 
 
 @ExtendWith(MockitoExtension.class)
@@ -153,6 +157,15 @@ class AdminServiceTest {
         LocalDate startDate = LocalDate.now().minusMonths(1);
         LocalDate endDate = LocalDate.now();
         when(userRepository.countRegisterByMonthByBetween(any(), any())).thenReturn(List.of(new PostAdMount("March", 10)));
+        List<PostAdMount> result = adminService.countRegisterByMonthByBetween(startDate, endDate);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void givenValidDateRange_countRegisterByMonth_thenReturnsList() {
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+        when(userRepository.countRegisterByMonth()).thenReturn(List.of(new PostAdMount("March", 10)));
         List<PostAdMount> result = adminService.countRegisterByMonthByBetween(startDate, endDate);
         assertFalse(result.isEmpty());
     }
@@ -324,5 +337,408 @@ class AdminServiceTest {
         assertEquals(testCost, result.costPerDay());
     }
 
+
+    /**
+     * test to function fetchMagazines
+     */
+
+    @Test
+    void fetchMagazines_costNullAndValidEditor_shouldCallCorrectRepositoryMethod() {
+        // Given
+        Long editorId = 1L;
+        boolean costNull = true;
+        boolean asc = true;
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
+
+        List<MagazineEntity> expectedMagazines = Collections.singletonList(magazine);
+        when(magazineRepository.findAllByCostPerDayIsNullAndEditor_IdOrderByCreatedAt(editorId, sort))
+                .thenReturn(expectedMagazines);
+
+        // When
+        List<MagazineEntity> result = adminService.fetchMagazines(costNull, editorId, asc);
+
+        // Then
+        assertAll(
+                () -> assertEquals(expectedMagazines, result),
+                () -> verify(magazineRepository).findAllByCostPerDayIsNullAndEditor_IdOrderByCreatedAt(editorId, sort),
+                () -> verifyNoMoreInteractions(magazineRepository)
+        );
+    }
+
+    @Test
+    void fetchMagazines_costNullAndInvalidEditor_shouldCallCostNullRepositoryMethod() {
+        // Given
+        Long editorId = 0L;
+        boolean costNull = true;
+        boolean asc = false;
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+
+        List<MagazineEntity> expectedMagazines = Collections.singletonList(magazine);
+        when(magazineRepository.findAllByCostPerDayIsNullOrderByCreatedAt(sort))
+                .thenReturn(expectedMagazines);
+
+        // When
+        List<MagazineEntity> result = adminService.fetchMagazines(costNull, editorId, asc);
+
+        // Then
+        assertAll(
+                () -> assertEquals(expectedMagazines, result),
+                () -> verify(magazineRepository).findAllByCostPerDayIsNullOrderByCreatedAt(sort),
+                () -> verifyNoMoreInteractions(magazineRepository)
+        );
+    }
+
+    @Test
+    void fetchMagazines_noCostNullAndValidEditor_shouldCallEditorRepositoryMethod() {
+        // Given
+        Long editorId = 1L;
+        boolean costNull = false;
+        boolean asc = true;
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
+
+        List<MagazineEntity> expectedMagazines = Collections.singletonList(magazine);
+        when(magazineRepository.findAllByEditor_IdOrderByCreatedAt(editorId, sort))
+                .thenReturn(expectedMagazines);
+
+        // When
+        List<MagazineEntity> result = adminService.fetchMagazines(costNull, editorId, asc);
+
+        // Then
+        assertAll(
+                () -> assertEquals(expectedMagazines, result),
+                () -> verify(magazineRepository).findAllByEditor_IdOrderByCreatedAt(editorId, sort),
+                () -> verifyNoMoreInteractions(magazineRepository)
+        );
+    }
+
+    @Test
+    void fetchMagazines_noCostNullAndInvalidEditor_shouldCallFindAllRepositoryMethod() {
+        // Given
+        Long editorId = 0L; // Invalid ID
+        boolean costNull = false;
+        boolean asc = false;
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+
+        List<MagazineEntity> expectedMagazines = Collections.singletonList(magazine);
+        when(magazineRepository.findAll(sort)).thenReturn(expectedMagazines);
+
+        // When
+        List<MagazineEntity> result = adminService.fetchMagazines(costNull, editorId, asc);
+
+        // Then
+        assertAll(
+                () -> assertEquals(expectedMagazines, result),
+                () -> verify(magazineRepository).findAll(sort),
+                () -> verifyNoMoreInteractions(magazineRepository)
+        );
+    }
+
+    @Test
+    void fetchMagazines_noCostNullAndNullEditor_shouldCallFindAllRepositoryMethod() {
+        // Given
+        Long editorId = null;
+        boolean costNull = false;
+        boolean asc = true;
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
+
+        List<MagazineEntity> expectedMagazines = Collections.singletonList(magazine);
+        when(magazineRepository.findAll(sort)).thenReturn(expectedMagazines);
+
+        // When
+        List<MagazineEntity> result = adminService.fetchMagazines(costNull, editorId, asc);
+
+        // Then
+        assertAll(
+                () -> assertEquals(expectedMagazines, result),
+                () -> verify(magazineRepository).findAll(sort),
+                () -> verifyNoMoreInteractions(magazineRepository),
+                () -> verify(userRepository, never()).existsById(any())
+        );
+    }
+
+    @Test
+    void fetchMagazines_costNullAndNullEditor_shouldCallCostNullRepositoryMethod() {
+        // Given
+        Long editorId = null;
+        boolean costNull = true;
+        boolean asc = false;
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+
+        List<MagazineEntity> expectedMagazines = Collections.singletonList(magazine);
+        when(magazineRepository.findAllByCostPerDayIsNullOrderByCreatedAt(sort))
+                .thenReturn(expectedMagazines);
+
+        // When
+        List<MagazineEntity> result = adminService.fetchMagazines(costNull, editorId, asc);
+
+        // Then
+        assertAll(
+                () -> assertEquals(expectedMagazines, result),
+                () -> verify(magazineRepository).findAllByCostPerDayIsNullOrderByCreatedAt(sort),
+                () -> verifyNoMoreInteractions(magazineRepository),
+                () -> verify(userRepository, never()).existsById(any())
+        );
+    }
+
+    @Test
+    void fetchMagazines_verifyAscendingSort() {
+        // Given
+        Long editorId = null;
+        boolean costNull = false;
+        boolean asc = true;
+        Sort expectedSort = Sort.by(Sort.Direction.ASC, "createdAt");
+
+        when(magazineRepository.findAll(expectedSort)).thenReturn(Collections.emptyList());
+
+        // When
+        adminService.fetchMagazines(costNull, editorId, asc);
+
+        // Then
+        verify(magazineRepository).findAll(expectedSort);
+    }
+
+    @Test
+    void fetchMagazines_verifyDescendingSort() {
+        // Given
+        Long editorId = null;
+        boolean costNull = false;
+        boolean asc = false;
+        Sort expectedSort = Sort.by(Sort.Direction.DESC, "createdAt");
+
+        when(magazineRepository.findAll(expectedSort)).thenReturn(Collections.emptyList());
+
+        // When
+        adminService.fetchMagazines(costNull, editorId, asc);
+
+        // Then
+        verify(magazineRepository).findAll(expectedSort);
+    }
+
+    /**
+     * Tests function getAllCostTotalMagazines
+     */
+    @Test
+    void getAllCostTotalMagazines_validDates_shouldReturnCorrectDtoList() {
+        // Given
+        LocalDate startDate = LocalDate.of(2023, 1, 1);
+        LocalDate endDate = LocalDate.of(2023, 1, 11); // 10 days later
+        Instant endInstant = endDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        List<MagazineEntity> magazines = List.of(magazine);
+        when(magazineRepository.findAllByCostPerDayIsNotNullAndCreatedAtLessThanEqual(endInstant))
+                .thenReturn(magazines);
+
+        // When
+        List<MagazineCostTotalDto> result = adminService.getAllCostTotalMagazines(startDate, endDate);
+
+        // Then
+        assertAll(
+                () -> assertEquals(1, result.size(), "Should return one DTO"),
+                () -> assertEquals(magazine.getTitle(), result.getFirst().title(), "Title should match"),
+                () -> assertEquals(magazine.getCostPerDay(), result.getFirst().costPerDay(), "Cost per day should match"),
+                () -> assertEquals(magazine.getEditor().getUsername(), result.getFirst().username(), "Username should match"),
+                () -> assertEquals(new BigDecimal("0"), result.getFirst().costTotal(), "Total cost should be 0 days * 10.00")
+        );
+
+        verify(magazineRepository).findAllByCostPerDayIsNotNullAndCreatedAtLessThanEqual(endInstant);
+    }
+
+    @Test
+    void getAllCostTotalMagazines_emptyMagazineList_shouldReturnEmptyList() {
+        // Given
+        LocalDate startDate = LocalDate.of(2023, 1, 1);
+        LocalDate endDate = LocalDate.of(2023, 1, 11);
+        Instant endInstant = endDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        when(magazineRepository.findAllByCostPerDayIsNotNullAndCreatedAtLessThanEqual(endInstant))
+                .thenReturn(Collections.emptyList());
+
+        // When
+        List<MagazineCostTotalDto> result = adminService.getAllCostTotalMagazines(startDate, endDate);
+
+        // Then
+        assertTrue(result.isEmpty(), "Should return empty list when no magazines found");
+        verify(magazineRepository).findAllByCostPerDayIsNotNullAndCreatedAtLessThanEqual(endInstant);
+    }
+
+    @Test
+    void getAllCostTotalMagazines_nullStartDate_shouldUseCreationDate() {
+        // Given
+        LocalDate startDate = LocalDate.of(2023, 1, 11);;
+        LocalDate endDate = LocalDate.of(2023, 1, 11);
+        Instant endInstant = endDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        when(magazineRepository.findAllByCostPerDayIsNotNullAndCreatedAtLessThanEqual(endInstant))
+                .thenReturn(List.of(magazine));
+
+        // When
+        List<MagazineCostTotalDto> result = adminService.getAllCostTotalMagazines(startDate, endDate);
+
+        // Then
+        assertEquals(new BigDecimal("0"), result.get(0).costTotal(),
+                "Should calculate from creation date when start date is null");
+    }
+
+    @Test
+    void getAllCostTotalMagazines_startDateAfterCreation_shouldUseStartDate() {
+        // Given
+        LocalDate startDate = LocalDate.of(2023, 1, 6); // 5 days after creation
+        LocalDate endDate = LocalDate.of(2023, 1, 11); // 5 days later
+        Instant endInstant = endDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        when(magazineRepository.findAllByCostPerDayIsNotNullAndCreatedAtLessThanEqual(endInstant))
+                .thenReturn(List.of(magazine));
+
+        // When
+        List<MagazineCostTotalDto> result = adminService.getAllCostTotalMagazines(startDate, endDate);
+
+        // Then
+        assertEquals(new BigDecimal("0"), result.get(0).costTotal(),
+                "Should calculate from start date when it's after creation");
+    }
+
+    @Test
+    void getAllCostTotalMagazines_endDateBeforeCreation_shouldReturnZero() {
+        // Given
+        LocalDate startDate = LocalDate.of(2023, 1, 1);
+        LocalDate endDate = LocalDate.of(2022, 12, 31); // Before creation
+        Instant endInstant = endDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        when(magazineRepository.findAllByCostPerDayIsNotNullAndCreatedAtLessThanEqual(endInstant))
+                .thenReturn(List.of(magazine));
+
+        // When
+        List<MagazineCostTotalDto> result = adminService.getAllCostTotalMagazines(startDate, endDate);
+
+        // Then
+        assertEquals(BigDecimal.ZERO, result.getFirst().costTotal(),
+                "Should return zero when end date is before creation");
+    }
+
+    @Test
+    void getAllCostTotalMagazines_shouldConvertDatesToInstantCorrectly() {
+        // Given
+        LocalDate startDate = LocalDate.of(2023, 1, 1);
+        LocalDate endDate = LocalDate.of(2023, 1, 11);
+        Instant expectedInstant = endDate.atStartOfDay(ZoneId.systemDefault()).toInstant();
+
+        when(magazineRepository.findAllByCostPerDayIsNotNullAndCreatedAtLessThanEqual(expectedInstant))
+                .thenReturn(List.of(magazine));
+
+        // When
+        adminService.getAllCostTotalMagazines(startDate, endDate);
+
+        // Then
+        verify(magazineRepository).findAllByCostPerDayIsNotNullAndCreatedAtLessThanEqual(expectedInstant);
+    }
+
+    @Test
+    void getAllCostTotalMagazines_DateNull_shouldConvertDatesToInstantCorrectly() {
+        // Given
+        LocalDate startDate = null;
+        LocalDate endDate = null;
+
+        when(magazineRepository.findAllByCostPerDayIsNotNull())
+                .thenReturn(List.of(magazine));
+
+        // When
+        adminService.getAllCostTotalMagazines(startDate, endDate);
+
+        // Then
+        verify(magazineRepository).findAllByCostPerDayIsNotNull();
+    }
+
+    /**
+     * tests function getAllMagazinesWithParams
+     */
+    @Test
+    void givenCostNullTrueAndValidEditorIdAndAscTrue_whenGetAllMagazinesWithParams_thenReturnFilteredAndSortedMagazines() {
+        // Given
+        boolean costNull = true;
+        Long editorId = 1L;
+        boolean asc = true;
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
+        List<MagazineEntity> expectedMagazines = Collections.singletonList(magazine);
+
+        when(magazineRepository.findAllByCostPerDayIsNullAndEditor_IdOrderByCreatedAt(editorId, sort))
+                .thenReturn(expectedMagazines);
+
+        // When
+        List<MagazineAdminDto> result = adminService.getAllMagazinesWithParams(costNull, editorId, asc);
+
+        // Then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.getFirst().id()).isEqualTo(magazine.getId());
+
+        verify(magazineRepository).findAllByCostPerDayIsNullAndEditor_IdOrderByCreatedAt(editorId, sort);
+    }
+
+    @Test
+    void givenCostNullTrueAndNullEditorIdAndAscFalse_whenGetAllMagazinesWithParams_thenReturnFilteredAndSortedMagazines() {
+        // Given
+        boolean costNull = true;
+        Long editorId = 0L;
+        boolean asc = false;
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        List<MagazineEntity> expectedMagazines = Collections.singletonList(magazine);
+
+        when(magazineRepository.findAllByCostPerDayIsNullOrderByCreatedAt(sort))
+                .thenReturn(expectedMagazines);
+
+        // When
+        List<MagazineAdminDto> result = adminService.getAllMagazinesWithParams(costNull, editorId, asc);
+
+        // Then
+        assertThat(result.size()).isEqualTo(1);
+        assertThat(result.size()).isEqualTo(1);
+
+        verify(magazineRepository).findAllByCostPerDayIsNullOrderByCreatedAt(sort);
+    }
+
+    @Test
+    void givenCostNullFalseAndValidEditorIdAndAscTrue_whenGetAllMagazinesWithParams_thenReturnFilteredAndSortedMagazines() {
+        // Given
+        boolean costNull = false;
+        Long editorId = 1L;
+        boolean asc = true;
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
+        List<MagazineEntity> expectedMagazines = Collections.singletonList(magazine);
+
+        when(magazineRepository.findAllByEditor_IdOrderByCreatedAt(editorId, sort))
+                .thenReturn(expectedMagazines);
+
+        // When
+        List<MagazineAdminDto> result = adminService.getAllMagazinesWithParams(costNull, editorId, asc);
+
+        // Then
+        assertThat(result.size()).isEqualTo(1);
+
+        verify(magazineRepository).findAllByEditor_IdOrderByCreatedAt(editorId, sort);
+    }
+
+    @Test
+    void givenCostNullFalseAndNullEditorIdAndAscFalse_whenGetAllMagazinesWithParams_thenReturnAllMagazinesSorted() {
+        // Given
+        boolean costNull = false;
+        Long editorId = null;
+        boolean asc = false;
+
+        Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
+        List<MagazineEntity> expectedMagazines = Collections.singletonList(magazine);
+
+        when(magazineRepository.findAll(sort))
+                .thenReturn(expectedMagazines);
+
+        // When
+        List<MagazineAdminDto> result = adminService.getAllMagazinesWithParams(costNull, editorId, asc);
+
+        // Then
+        assertThat(result.size()).isEqualTo(1);
+
+        verify(magazineRepository).findAll(sort);
+    }
 
 }
