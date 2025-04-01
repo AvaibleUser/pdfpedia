@@ -31,10 +31,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.With;
 
 @Entity(name = "magazine")
 @Table(name = "magazine", schema = "magazine_control")
 @Data
+@With
 @Builder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor

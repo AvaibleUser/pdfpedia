@@ -46,6 +46,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import lombok.Generated;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -95,8 +96,7 @@ public class MagazineService implements IMagazineService {
         Set<TagEntity> tags = tagRepository.findAllByIdIn(magazine.tagIds());
 
         Instant createdAt = Optional.ofNullable(magazine.createdAt())
-                .map(LocalDate::atStartOfDay)
-                .map(l -> l.atZone(ZoneId.systemDefault()).toInstant())
+                .map(l -> l.atStartOfDay().atZone(ZoneId.systemDefault()).toInstant())
                 .orElse(null);
 
         MagazineEntity dbMagazine = magazineRepository.save(MagazineEntity.builder()
@@ -140,12 +140,6 @@ public class MagazineService implements IMagazineService {
                 .filter(ObjectUtils::isNotEmpty)
                 .map(tagRepository::findAllByIdIn)
                 .ifPresent(magazine::setTags);
-
-        if (newMagazine.adBlockingExpirationDate().isPresent()) {
-            magazine.setAdBlockingExpirationDate(newMagazine.adBlockingExpirationDate().get());
-        } else if (magazine.getAdBlockingExpirationDate() != null) {
-            magazine.setAdBlockingExpirationDate(null);
-        }
 
         magazine = magazineRepository.save(magazine);
 
@@ -194,17 +188,16 @@ public class MagazineService implements IMagazineService {
             throw new BadRequestException("No hay suficiente fondos para pagar la tarifa");
         }
 
+        wallet.setBalance(wallet.getBalance().subtract(cost));
+        magazineEntity.setAdBlockingExpirationDate(magazine.adBlockingExpirationDate());
+
+        walletRepository.save(wallet);
+        magazineRepository.save(magazineEntity);
         paymentRepository.save(PaymentEntity.builder()
                 .amount(cost)
                 .paymentType(PaymentType.BLOCK_ADS)
                 .magazine(magazineEntity)
                 .build());
-
-        wallet.setBalance(wallet.getBalance().subtract(cost));
-        walletRepository.save(wallet);
-
-        magazineEntity.setAdBlockingExpirationDate(magazine.adBlockingExpirationDate());
-        magazineRepository.save(magazineEntity);
 
         return MinimalMagazineDto.builder()
                 .id(magazineEntity.getId())
@@ -224,7 +217,7 @@ public class MagazineService implements IMagazineService {
                 });
     }
 
-    @lombok.Generated
+    @Generated
     @Transactional(readOnly = true)
     @Override
     public Page<MagazineItemDto> getMagazinesByCategory(Long categoryId, Pageable pageable) {
@@ -242,7 +235,7 @@ public class MagazineService implements IMagazineService {
         return MagazineItemDto.fromEntity(magazineRepository.findById(id).get());
     }
 
-    @lombok.Generated
+    @Generated
     public TotalTarjertDto getTotalPostMagazine(LocalDate startDate, LocalDate endDate) {
         if (startDate == null && endDate == null) {
             return TotalTarjertDto
@@ -260,7 +253,7 @@ public class MagazineService implements IMagazineService {
                 .build();
     }
 
-    @lombok.Generated
+    @Generated
     public TopEditorDto getTopEditor(LocalDate startDate, LocalDate endDate) {
 
         if (startDate == null && endDate == null) {
@@ -292,10 +285,9 @@ public class MagazineService implements IMagazineService {
                 .userName(editor.getUsername())
                 .build();
 
-
     }
 
-    @lombok.Generated
+    @Generated
     public List<PostAdMount> getMagazineCountsByMonth(LocalDate startDate, LocalDate endDate) {
 
         if (startDate == null && endDate == null) {
@@ -309,12 +301,12 @@ public class MagazineService implements IMagazineService {
         return magazineRepository.countMagazineByMonthByBetween(startInstant, endInstant);
     }
 
-    @lombok.Generated
+    @Generated
     public List<MagazineItemDto> getUserMagazines(Long idUser) {
         return subscriptionRepository.findUserMagazines(idUser);
     }
 
-    @lombok.Generated
+    @Generated
     @Override
     @Transactional(readOnly = true)
     public List<MagazineItemDto> getNewestMagazines() {

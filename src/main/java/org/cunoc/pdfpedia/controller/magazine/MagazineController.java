@@ -1,6 +1,7 @@
 package org.cunoc.pdfpedia.controller.magazine;
 
 import static org.springframework.http.HttpStatus.CREATED;
+import static org.springframework.http.HttpStatus.NO_CONTENT;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,18 +10,19 @@ import org.cunoc.pdfpedia.domain.dto.announcer.PostAdMount;
 import org.cunoc.pdfpedia.domain.dto.announcer.TotalTarjertDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.AddMagazineDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.MagazineDto;
+import org.cunoc.pdfpedia.domain.dto.magazine.MagazineEditorPreviewDto;
+import org.cunoc.pdfpedia.domain.dto.magazine.MagazineItemDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.MinimalMagazineDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.TopEditorDto;
-import org.cunoc.pdfpedia.domain.dto.magazine.MagazineItemDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.UpdateMagazineBlockDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.UpdateMagazineDto;
 import org.cunoc.pdfpedia.service.magazine.IMagazineService;
 import org.cunoc.pdfpedia.util.annotation.CurrentUserId;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -45,13 +47,15 @@ public class MagazineController {
 
     private final IMagazineService magazineService;
 
-    @GetMapping(params = "type=published")
+    @GetMapping(params = { "type=published", "complete=true" })
     @RolesAllowed("EDITOR")
-    public List<?> findEditorMagazines(@CurrentUserId @Positive long editorId,
-                                       @RequestParam(defaultValue = "true") boolean complete) {
-        if (complete) {
-            return magazineService.findEditorMagazines(editorId);
-        }
+    public List<MagazineEditorPreviewDto> findCompleteEditorMagazines(@CurrentUserId @Positive long editorId) {
+        return magazineService.findEditorMagazines(editorId);
+    }
+
+    @GetMapping(params = { "type=published", "complete=false" })
+    @RolesAllowed("EDITOR")
+    public List<MinimalMagazineDto> findMinimalEditorMagazines(@CurrentUserId @Positive long editorId) {
         return magazineService.findMinimalEditorMagazines(editorId);
     }
 
@@ -65,15 +69,14 @@ public class MagazineController {
     @RolesAllowed("EDITOR")
     @ResponseStatus(CREATED)
     public MinimalMagazineDto createMagazine(@CurrentUserId @Positive long editorId,
-                                             @RequestBody @Valid AddMagazineDto magazine) {
+            @RequestBody @Valid AddMagazineDto magazine) {
         return magazineService.saveMagazine(editorId, magazine);
     }
 
     @PutMapping("/{id}")
     @RolesAllowed("EDITOR")
-    @ResponseStatus(CREATED)
     public MinimalMagazineDto updateMagazine(@CurrentUserId @Positive long editorId, @PathVariable @Positive long id,
-                                             @RequestBody @Valid UpdateMagazineDto magazine) {
+            @RequestBody @Valid UpdateMagazineDto magazine) {
         return magazineService.updateMagazine(editorId, id, magazine);
     }
 
@@ -86,6 +89,7 @@ public class MagazineController {
 
     @DeleteMapping("/{id}")
     @RolesAllowed("EDITOR")
+    @ResponseStatus(NO_CONTENT)
     public void deleteMagazine(@CurrentUserId @Positive long editorId, @PathVariable long id) {
         magazineService.deleteMagazine(editorId, id);
     }

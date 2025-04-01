@@ -9,6 +9,9 @@ import java.util.stream.Stream;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import lombok.Builder;
+
+@Builder(toBuilder = true)
 public record MagazineDto(
         Long id,
         String title,

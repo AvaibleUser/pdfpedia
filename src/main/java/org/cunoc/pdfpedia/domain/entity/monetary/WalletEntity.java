@@ -26,10 +26,12 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
+import lombok.With;
 
 @Entity(name = "wallet")
 @Table(name = "wallet", schema = "monetary_control")
 @Data
+@With
 @Builder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor
