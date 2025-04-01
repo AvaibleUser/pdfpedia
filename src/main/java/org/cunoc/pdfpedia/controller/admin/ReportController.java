@@ -1,5 +1,6 @@
 package org.cunoc.pdfpedia.controller.admin;
 
+import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.TotalReportPaymentPostAdByAnnouncersDto;
@@ -24,6 +25,7 @@ public class ReportController {
     private final IReportService reportService;
 
     @GetMapping("/count-by-role")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<List<CountRegisterByRolDto>> getCountByRole(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
@@ -32,6 +34,7 @@ public class ReportController {
     }
 
     @GetMapping("/earnings-total")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<EarningsReport> getTotalReportEarnings(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
@@ -40,6 +43,7 @@ public class ReportController {
     }
 
     @GetMapping("/post-ad-total")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<PostAdReportTotal> getTotalReportEarnings(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
@@ -49,6 +53,7 @@ public class ReportController {
     }
 
     @GetMapping("/post-ad-total-announcers")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<TotalReportPaymentPostAdByAnnouncersDto> getTotalReportEarningsPostAdByAnnouncers(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
@@ -57,6 +62,7 @@ public class ReportController {
     }
 
     @GetMapping("/post-ad-total-announcers/{id}")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<TotalReportPaymentPostAdByAnnouncersDto> getTotalReportEarningsPostAdByAnnouncersById(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
@@ -66,6 +72,7 @@ public class ReportController {
     }
 
     @GetMapping("/top-5-magazines-subscription")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<ReportTopMagazineSubscriptions> getTop5MagazinesBySubscriptions(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
@@ -74,6 +81,7 @@ public class ReportController {
     }
 
     @GetMapping("/top-5-magazines-comments")
+    @RolesAllowed("ADMIN")
     public ResponseEntity<ReportMagazineCommentsDto> getTop5MagazinesByComments(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate

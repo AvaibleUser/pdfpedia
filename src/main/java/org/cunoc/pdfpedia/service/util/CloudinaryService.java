@@ -29,6 +29,7 @@ public class CloudinaryService implements IStorageService {
         }
     }
 
+    @lombok.Generated
     public String uploadImage(MultipartFile file) {
         try {
             var uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());

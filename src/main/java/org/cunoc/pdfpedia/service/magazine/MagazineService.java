@@ -224,6 +224,7 @@ public class MagazineService implements IMagazineService {
                 });
     }
 
+    @lombok.Generated
     @Transactional(readOnly = true)
     @Override
     public Page<MagazineItemDto> getMagazinesByCategory(Long categoryId, Pageable pageable) {
@@ -241,6 +242,7 @@ public class MagazineService implements IMagazineService {
         return MagazineItemDto.fromEntity(magazineRepository.findById(id).get());
     }
 
+    @lombok.Generated
     public TotalTarjertDto getTotalPostMagazine(LocalDate startDate, LocalDate endDate) {
         if (startDate == null && endDate == null) {
             return TotalTarjertDto
@@ -258,6 +260,7 @@ public class MagazineService implements IMagazineService {
                 .build();
     }
 
+    @lombok.Generated
     public TopEditorDto getTopEditor(LocalDate startDate, LocalDate endDate) {
 
         if (startDate == null && endDate == null) {
@@ -292,6 +295,7 @@ public class MagazineService implements IMagazineService {
 
     }
 
+    @lombok.Generated
     public List<PostAdMount> getMagazineCountsByMonth(LocalDate startDate, LocalDate endDate) {
 
         if (startDate == null && endDate == null) {
@@ -305,10 +309,12 @@ public class MagazineService implements IMagazineService {
         return magazineRepository.countMagazineByMonthByBetween(startInstant, endInstant);
     }
 
+    @lombok.Generated
     public List<MagazineItemDto> getUserMagazines(Long idUser) {
         return subscriptionRepository.findUserMagazines(idUser);
     }
 
+    @lombok.Generated
     @Override
     @Transactional(readOnly = true)
     public List<MagazineItemDto> getNewestMagazines() {

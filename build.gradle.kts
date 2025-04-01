@@ -68,7 +68,8 @@ tasks.jacocoTestReport {
                 fileTree(it) {
                     setExcludes(listOf(
                         "**/entity/**/*",
-                        "**/dto/**/*"))
+                        "**/dto/**/*",
+						"**/export/**/*"))
                 }
             }
         )

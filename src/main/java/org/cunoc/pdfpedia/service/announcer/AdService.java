@@ -148,7 +148,7 @@ public class AdService implements IAdService {
 
     @Override
     public TotalTarjertDto getTotalPostAd(LocalDate startDate, LocalDate endDate) {
-        if (startDate == null && endDate == null) {
+        if (startDate == null || endDate == null) {
             return TotalTarjertDto
                     .builder()
                     .total(this.adRepository.count())
@@ -166,7 +166,7 @@ public class AdService implements IAdService {
 
     @Override
     public TopEditorDto getTopPostAd(LocalDate startDate, LocalDate endDate) {
-        if (startDate == null && endDate == null) {
+        if (startDate == null || endDate == null) {
             UserEntity editor = this.adRepository
                     .findAllByIsDeletedFalseOrderByAdvertiser(PageRequest.of(0, 1))
                     .stream()
@@ -198,7 +198,7 @@ public class AdService implements IAdService {
     @Override
     public List<PostAdMount> getAdCountsByMonth(LocalDate startDate, LocalDate endDate) {
 
-        if (startDate == null && endDate == null) {
+        if (startDate == null || endDate == null) {
             return this.adRepository.countAdsByMonth();
         }
 
