@@ -1,5 +1,7 @@
 package org.cunoc.pdfpedia.service.admin;
 
+import org.cunoc.pdfpedia.domain.dto.admin.report.adEffectiveness.ReportAdvertiserAdViews;
+import org.cunoc.pdfpedia.domain.dto.admin.report.adEffectiveness.ViewsProjection;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.AdReportDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.MagazineCostTotalDto;
@@ -55,4 +57,8 @@ public interface IReportService {
     ReportMagazineCommentsDto getTop5MagazinesByCommentsRange(LocalDate startDate, LocalDate endDate);
 
     EarningsReport getTotalReportEarnings(LocalDate startDate, LocalDate endDate);
+
+    ReportAdvertiserAdViews getAdViewsReport(List<ViewsProjection> projections);
+
+    ReportAdvertiserAdViews getAdViewsReportRange(LocalDate startDate, LocalDate endDate);
 }

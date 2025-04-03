@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Reporte de Usuarios con sus Anuncios y Vistas</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #000;
+            margin: 0;
+            padding: 0;
+            background-color: #fff;
+        }
+
+        .container {
+            width: 94%;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .header .left {
+            width: 70%;
+        }
+
+        .header .left h1 {
+            font-size: 24px;
+            margin: 10px 0;
+            color: #000;
+            font-weight: bold;
+        }
+
+        .header .left h2 {
+            font-size: 18px;
+            margin: 5px 0;
+            color: #000;
+        }
+
+        .header .left p {
+            font-size: 14px;
+            margin: 5px 0;
+            color: #000;
+        }
+
+        .header img {
+            width: 150px;
+            height: auto;
+            position: absolute;
+            right: 0;
+            top: 0;
+            object-fit: contain;
+        }
+
+        .report-info {
+            margin-bottom: 20px;
+        }
+
+        .company-info,
+        .report-details {
+            width: 45%;
+            float: left;
+            margin-bottom: 10px;
+        }
+
+        .company-info {
+            margin-right: 10%;
+        }
+
+        .report-details p,
+        .company-info p {
+            margin: 5px 0;
+            font-size: 14px;
+            color: #000;
+        }
+
+        .clearfix {
+            clear: both;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+            border: 1px solid #000;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #000;
+            color: #000;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            font-size: 12px;
+            color: #000;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .font-bold {
+            font-weight: bold;
+        }
+
+        .user-header {
+            text-align: center;
+            font-size: 16px;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!-- Encabezado del reporte -->
+    <div class="header">
+        <div class="left">
+            <h1>Reporte de Usuarios con sus Anuncios y Vistas</h1>
+            <h2>Compañía RevistLand</h2>
+        </div>
+        <img
+                th:src="@{${companyLogo}}"
+                src="/image.png"
+                alt="Logo Empresa"
+                class="logo"
+        />
+    </div>
+
+    <!-- Información de la empresa y del reporte -->
+    <div class="report-info">
+        <div class="company-info">
+            <h3>Detalles del Reporte</h3>
+            <p><strong>Fecha del reporte:</strong> <span th:text="${dateReport}">--</span></p>
+            <p><strong>Tipo Reporte:</strong> <span>Reporte de Anuncios y Vistas por Usuario</span></p>
+            <p><strong>Descripción:</strong> <span>Consulta el rendimiento de los anuncios por anunciante, incluyendo la cantidad de veces mostrados y la URL donde aparecieron.</span></p>
+        </div>
+
+        <div class="report-details">
+            <h3>Filtros Aplicados</h3>
+            <p><strong>Rango de fechas:</strong> <span th:text="${range}">---</span></p>
+            <p><strong>Tipo de anuncio:</strong> <span th:text="${filter} ?: 'No aplica'">No aplica</span></p>
+        </div>
+
+        <div class="clearfix"></div>
+    </div>
+
+    <!-- Tabla de usuario con sus Anuncios y vistas -->
+    <div th:each="item : ${advertiserAdViews}">
+        <p class="user-header">
+            Usuario: <span class="font-bold" th:text="${item.username}">Usuario</span> |
+            Correo electrónico: <span class="font-bold" th:text="${item.email}">Email</span>
+        </p>
+
+        <div th:each="ad : ${item.adViewsDtos}">
+            <table>
+                <thead>
+                <tr>
+                    <th colspan="4" class="text-center font-bold" style="background-color: #f2f2f2;">
+                        Detalle del Anuncio
+                    </th>
+                </tr>
+                <tr>
+                    <th>Tipo de Anuncio</th>
+                    <th>Vigencia</th>
+                    <th>Fecha de Registro</th>
+                    <th>Cantidad de vistas</th>
+                </tr>
+                <tr class="font-bold">
+                    <td th:text="${ad.adType}">Tipo</td>
+                    <td th:text="${ad.durationDays} + ' dia(s)'">Vigencia</td>
+                    <td th:text="${#dates.format(ad.createdAtAd, 'dd/MM/yyyy HH:mm')}">Fecha</td>
+                    <td th:text="${ad.views.size()}">0</td>
+                </tr>
+                <tr>
+                    <th colspan="4" class="text-center font-bold" style="background-color: #f2f2f2;">
+                        Detalle de Vistas
+                    </th>
+                </tr>
+                <tr>
+                    <th>#</th>
+                    <th colspan="2">URL de vista</th>
+                    <th>Fecha de vista</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="view, stat : ${ad.views}">
+                    <td th:text="${stat.count}">1</td>
+                    <td colspan="2" th:text="${view.urlView}">URL</td>
+                    <td th:text="${#dates.format(view.createdAtView, 'dd/MM/yyyy HH:mm')}">Fecha</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Pie de página del reporte -->
+    <div class="footer">
+        <p>Reporte generado automáticamente por el Sistema de Reportes. Todos los derechos reservados © 2025</p>
+    </div>
+</div>
+</body>
+</html>

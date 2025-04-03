@@ -2,6 +2,7 @@ package org.cunoc.pdfpedia.controller.admin;
 
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
+import org.cunoc.pdfpedia.domain.dto.admin.report.adEffectiveness.ReportAdvertiserAdViews;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.TotalReportPaymentPostAdByAnnouncersDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.postAd.PostAdReportTotal;
@@ -15,6 +16,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.List;
+
+import static org.springframework.http.HttpStatus.OK;
 
 
 @RestController
@@ -89,5 +92,13 @@ public class ReportController {
         return ResponseEntity.ok(this.reportService.getTop5MagazinesByCommentsRange(startDate, endDate));
     }
 
+    @GetMapping("/ad_effectiveness")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<ReportAdvertiserAdViews> getAdEffectivenessByViews(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate
+    ){
+        return ResponseEntity.ok(this.reportService.getAdViewsReportRange(startDate, endDate));
+    }
 
 }

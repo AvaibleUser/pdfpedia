@@ -2,6 +2,7 @@ package org.cunoc.pdfpedia.controller.admin.export;
 
 import jakarta.annotation.security.RolesAllowed;
 import lombok.RequiredArgsConstructor;
+import org.cunoc.pdfpedia.domain.dto.admin.report.adEffectiveness.ReportAdvertiserAdViews;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.TotalReportPaymentPostAdByAnnouncersDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.postAd.PostAdReportTotal;
@@ -50,5 +51,11 @@ public class ExportReportController {
     @RolesAllowed("ADMIN")
     public ResponseEntity<Resource> exportReportTop5MagazineComments(@RequestBody ReportMagazineCommentsDto dto){
         return this.exportReportService.exportReportTop5MagazineComments(dto);
+    }
+
+    @PostMapping("/ad-effectiveness")
+    @RolesAllowed("ADMIN")
+    public ResponseEntity<Resource> exportReportAdEffectiveness(@RequestBody ReportAdvertiserAdViews dto){
+        return this.exportReportService.exportReportAdEffectiveness(dto);
     }
 }

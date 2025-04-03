@@ -1,5 +1,6 @@
 package org.cunoc.pdfpedia.service.admin.export;
 
+import lombok.Generated;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.service.util.ThymeleafService;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ public class PdfService {
     private final ThymeleafService thymeleafService;
     private final PdfGeneratorService pdfGeneratorService;
 
+    @Generated
     public ResponseEntity<Resource> downloadPdf(String templateName, Map<String, Object> templateVariables){
         String billHtml = thymeleafService.renderTemplate(templateName, templateVariables);
         try {
@@ -43,6 +45,7 @@ public class PdfService {
         }
     }
 
+    @Generated
     public byte[]  generatePdf(String templateName, Map<String, Object> templateVariables){
         String billHtml = thymeleafService.renderTemplate(templateName, templateVariables);
         try {

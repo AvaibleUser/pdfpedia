@@ -1,6 +1,8 @@
 package org.cunoc.pdfpedia.service.admin;
 
+import lombok.Generated;
 import lombok.RequiredArgsConstructor;
+import org.cunoc.pdfpedia.domain.dto.admin.report.adEffectiveness.*;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.AdReportDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.MagazineCostTotalDto;
@@ -18,6 +20,7 @@ import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.Magaz
 import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.ReportTopMagazineSubscriptions;
 import org.cunoc.pdfpedia.domain.dto.admin.report.topMagazineSusbcriptions.SubscriptionsDto;
 import org.cunoc.pdfpedia.domain.dto.dashboard.CountRegisterByRolDto;
+import org.cunoc.pdfpedia.repository.announcer.AdViewsRepository;
 import org.cunoc.pdfpedia.repository.interaction.CommentRepository;
 import org.cunoc.pdfpedia.repository.interaction.SubscriptionRepository;
 import org.cunoc.pdfpedia.repository.monetary.PaymentRepository;
@@ -31,8 +34,10 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,6 +50,7 @@ public class ReportService implements IReportService {
     private final PaymentRepository paymentRepository;
     private final SubscriptionRepository subscriptionRepository;
     private final CommentRepository commentRepository;
+    private final AdViewsRepository adViewsRepository;
 
     // funcion para obtner la cantidad de usuarios registrados por rol en un intervalo de tiempo
     @Override
@@ -378,5 +384,70 @@ public class ReportService implements IReportService {
         return this.getTopClearComments(commentsDtos);
 
     }
+
+    @Override
+    @Generated
+    public ReportAdvertiserAdViews getAdViewsReport(List<ViewsProjection> projections){
+
+        Map<Long, AdvertiserAdViewsDto> advertisersMap = new HashMap<>();
+
+        for (ViewsProjection projection : projections) {
+            advertisersMap.computeIfAbsent(projection.idUser(), userId ->
+                    AdvertiserAdViewsDto.builder()
+                            .idUser(userId)
+                            .username(projection.username())
+                            .email(projection.email())
+                            .adViewsDtos(new ArrayList<>())
+                            .build()
+            );
+
+            AdvertiserAdViewsDto advertiser = advertisersMap.get(projection.idUser());
+
+            Map<Long, AdViewsDto> adsMap = advertiser.adViewsDtos().stream()
+                    .collect(Collectors.toMap(AdViewsDto::idAd, Function.identity()));
+
+            adsMap.computeIfAbsent(projection.idAd(), adId ->
+                    AdViewsDto.builder()
+                            .idAd(adId)
+                            .createdAtAd(projection.createdAtAd())
+                            .adType(projection.adType())
+                            .durationDays(projection.durationDays())
+                            .views(new ArrayList<>())
+                            .build()
+            );
+
+            AdViewsDto adView = adsMap.get(projection.idAd());
+
+            adView.views().add(new ViewDto(projection.urlView(), projection.createdAtView()));
+
+            if (!advertiser.adViewsDtos().contains(adView)) {
+                advertiser.adViewsDtos().add(adView);
+            }
+        }
+
+        return ReportAdvertiserAdViews
+                .builder()
+                .advertiserAdViews(new ArrayList<>(advertisersMap.values()))
+                .build();
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    @Generated
+    public ReportAdvertiserAdViews getAdViewsReportRange(LocalDate startDate, LocalDate endDate){
+        List<ViewsProjection> projections;
+        if (startDate == null || endDate == null) {
+            projections = adViewsRepository.findAllViewsProjectionReportDto();
+            return this.getAdViewsReport(projections);
+        }
+
+        ZoneId zoneId = ZoneId.systemDefault();
+        Instant startInstant = startDate.atStartOfDay(zoneId).toInstant();
+        Instant endInstant = endDate.atStartOfDay(zoneId).toInstant();
+
+        projections = adViewsRepository.findAllViewsProjectionReportDtoRange(startInstant, endInstant);
+        return this.getAdViewsReport(projections);
+    }
+
 
 }
