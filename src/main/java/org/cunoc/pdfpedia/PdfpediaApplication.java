@@ -7,7 +7,7 @@ import org.springframework.context.annotation.PropertySource;
 
 @SpringBootApplication
 @ConfigurationPropertiesScan
-@PropertySource("file:${user.dir}/.env")
+// @PropertySource("file:${user.dir}/.env")
 public class PdfpediaApplication {
 
     public static void main(String[] args) {

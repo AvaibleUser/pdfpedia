@@ -1,15 +1,16 @@
 package org.cunoc.pdfpedia.domain.dto.report;
 
 import java.sql.Timestamp;
+import java.time.Instant;
 import java.util.List;
 
 import org.cunoc.pdfpedia.domain.dto.report.EditorReportData.ReportRow;
 
 public record LikeReportRow(
-        Timestamp likeDate,
+        Object likeDate,
         String liker,
         String magazineTitle,
-        Timestamp magazinePublishDate,
+        Object magazinePublishDate,
         boolean disabledLikes) implements ReportRow {
 
     public static final List<String> headers = List.of(
@@ -21,7 +22,10 @@ public record LikeReportRow(
 
     @Override
     public List<Object> row() {
-        return List.of(likeDate.toInstant(), liker, magazineTitle, magazinePublishDate.toInstant(),
+        return List.of(likeDate instanceof Timestamp d ? d.toInstant() : likeDate instanceof Instant d ? d : likeDate,
+                liker, magazineTitle,
+                magazinePublishDate instanceof Timestamp d ? d.toInstant()
+                        : magazinePublishDate instanceof Instant d ? d : magazinePublishDate,
                 disabledLikes ? "Desactivado" : "Activo");
     }
 
@@ -30,7 +34,7 @@ public record LikeReportRow(
             String magazineTitle,
             String author,
             long totalLikes,
-            Timestamp magazinePublishDate,
+            Object magazinePublishDate,
             String category) implements ReportRow {
 
         public static final List<String> headers = List.of(
@@ -43,7 +47,10 @@ public record LikeReportRow(
 
         @Override
         public List<Object> row() {
-            return List.of(position, magazineTitle, author, totalLikes, magazinePublishDate.toInstant(), category);
+            return List.of(position, magazineTitle, author, totalLikes,
+                    magazinePublishDate instanceof Timestamp d ? d.toInstant()
+                            : magazinePublishDate instanceof Instant d ? d : magazinePublishDate,
+                    category);
         }
     }
 }
