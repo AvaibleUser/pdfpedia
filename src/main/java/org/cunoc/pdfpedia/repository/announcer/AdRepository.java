@@ -70,7 +70,14 @@ public interface AdRepository extends JpaRepository<AdEntity, Long> {
     """)
     List<PostAdMount> countAdsByMonthByBetween(@Param("startDate") Instant startDate, @Param("endDate") Instant endDate);
 
-    @Query(value = "SELECT * FROM ad_control.ad WHERE is_active = true AND is_deleted = false ORDER BY RANDOM() LIMIT 1", nativeQuery = true)
+    @Query(
+            value = "SELECT * FROM ad_control.ad " +
+                    "WHERE is_active = true " +
+                    "AND is_deleted = false " +
+                    "AND expires_at > CURRENT_TIMESTAMP " +
+                    "ORDER BY RANDOM() " +
+                    "LIMIT 1",
+            nativeQuery = true
+    )
     Optional<AdEntity> findRandomAd();
-
 }
