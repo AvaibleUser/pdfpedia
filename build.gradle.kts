@@ -37,6 +37,7 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0")
 	implementation("com.warrenstrange:googleauth:1.4.0")
 	implementation("com.cloudinary:cloudinary-http44:1.39.0")
+	implementation("org.xhtmlrenderer:flying-saucer-pdf:9.9.1")
 	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
 	annotationProcessor("org.projectlombok:lombok")
@@ -67,7 +68,8 @@ tasks.jacocoTestReport {
                 fileTree(it) {
                     setExcludes(listOf(
                         "**/entity/**/*",
-                        "**/dto/**/*"))
+                        "**/dto/**/*",
+						"**/export/**/*"))
                 }
             }
         )

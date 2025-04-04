@@ -5,19 +5,17 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.cunoc.pdfpedia.domain.dto.announcer.*;
 import org.cunoc.pdfpedia.domain.dto.dashboard.AnnouncersDto;
-import org.cunoc.pdfpedia.domain.dto.dashboard.PostAdMothDto;
 import org.cunoc.pdfpedia.domain.dto.magazine.TopEditorDto;
 import org.cunoc.pdfpedia.domain.entity.announcer.AdEntity;
 import org.cunoc.pdfpedia.domain.entity.announcer.ChargePeriodAdEntity;
-import org.cunoc.pdfpedia.domain.entity.magazine.MagazineEntity;
 import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
 import org.cunoc.pdfpedia.domain.exception.ValueNotFoundException;
 import org.cunoc.pdfpedia.domain.utils.MapperAd;
 import org.cunoc.pdfpedia.repository.announcer.AdRepository;
 import org.cunoc.pdfpedia.repository.announcer.ChargePeriodAdRepository;
 import org.cunoc.pdfpedia.repository.user.UserRepository;
-import org.cunoc.pdfpedia.service.monetary.PaymentService;
-import org.cunoc.pdfpedia.service.monetary.WalletService;
+import org.cunoc.pdfpedia.service.monetary.IPaymentService;
+import org.cunoc.pdfpedia.service.monetary.IWalletService;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,15 +28,16 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AdService {
+public class AdService implements IAdService {
 
     private final AdRepository adRepository;
     private final UserRepository userRepository;
     private final ChargePeriodAdRepository chargePeriodAdRepository;
     private final MapperAd mapperAd;
-    private final WalletService walletService;
-    private final PaymentService paymentService;
+    private final IWalletService walletService;
+    private final IPaymentService paymentService;
 
+    @Override
     @Transactional
     public AdDto create(@Valid AdPostDto adPostDto, Long advertiserId) {
         UserEntity advertiser = userRepository.findById(advertiserId)
@@ -60,6 +59,7 @@ public class AdService {
         return mapperAd.toDto(savedEntity);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<AdDto> findAllByUserId(Long userId) {
         return this.adRepository.findAllByAdvertiserIdOrderByExpiresAtDesc(userId)
@@ -68,8 +68,9 @@ public class AdService {
                 .toList();
     }
 
+    @Override
     public List<AdDto> findAllActiveByUserId(LocalDate startDate, LocalDate endDate, Long userId) {
-        if (startDate == null && endDate == null){
+        if (startDate == null && endDate == null) {
             return this.adRepository.findAllByAdvertiserIdAndIsActiveTrueOrderByExpiresAtDesc(userId)
                     .stream()
                     .map(this.mapperAd::toDto)
@@ -82,6 +83,7 @@ public class AdService {
 
     }
 
+    @Override
     @Transactional
     public AdDto updateDeactivated(Long adId) {
         AdEntity exit = this.adRepository.findById(adId).
@@ -93,6 +95,7 @@ public class AdService {
         return this.mapperAd.toDto(exit);
     }
 
+    @Override
     @Transactional
     public AdDto updateActive(Long adId, @Valid AdPostDto adPostDto, Long advertiserId) {
         ChargePeriodAdEntity chargePeriodAd = chargePeriodAdRepository.findById(adPostDto.chargePeriodAd())
@@ -117,6 +120,7 @@ public class AdService {
 
     }
 
+    @Override
     @Transactional
     public AdDto update(Long adId, @Valid AdUpdateDto adUpdateDto) {
         AdEntity exist = this.adRepository.findById(adId).
@@ -131,17 +135,20 @@ public class AdService {
         return mapperAd.toDto(savedEntity);
     }
 
+    @Override
     public TotalAdsDto totalAdsByUserId(Long userId) {
         return new TotalAdsDto(this.adRepository.countAllByAdvertiserId(userId)
                 , this.adRepository.countAllByAdvertiserIdAndIsActiveTrue(userId));
     }
 
+    @Override
     public List<PostAdMount> getPostMount(Long userId) {
         return adRepository.countAdsByMonth(userId);
     }
 
+    @Override
     public TotalTarjertDto getTotalPostAd(LocalDate startDate, LocalDate endDate) {
-        if (startDate == null && endDate == null){
+        if (startDate == null || endDate == null) {
             return TotalTarjertDto
                     .builder()
                     .total(this.adRepository.count())
@@ -157,8 +164,9 @@ public class AdService {
                 .build();
     }
 
-    public TopEditorDto getTopPostAd(LocalDate startDate, LocalDate endDate){
-        if (startDate == null && endDate == null){
+    @Override
+    public TopEditorDto getTopPostAd(LocalDate startDate, LocalDate endDate) {
+        if (startDate == null || endDate == null) {
             UserEntity editor = this.adRepository
                     .findAllByIsDeletedFalseOrderByAdvertiser(PageRequest.of(0, 1))
                     .stream()
@@ -187,9 +195,10 @@ public class AdService {
                 .build();
     }
 
+    @Override
     public List<PostAdMount> getAdCountsByMonth(LocalDate startDate, LocalDate endDate) {
 
-        if (startDate == null && endDate == null){
+        if (startDate == null || endDate == null) {
             return this.adRepository.countAdsByMonth();
         }
 
@@ -200,6 +209,7 @@ public class AdService {
         return adRepository.countAdsByMonthByBetween(startInstant, endInstant);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<AdDto> findAll() {
         return this.adRepository.findAllByOrderByExpiresAtDesc()
@@ -208,11 +218,17 @@ public class AdService {
                 .toList();
     }
 
-    public  List<AnnouncersDto> findAllAnnouncers(){
+    @Override
+    public List<AnnouncersDto> findAllAnnouncers() {
         return this.userRepository.findAllByRole_Name("ANNOUNCER", AnnouncersDto.class);
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public AdDto getRandomAdd() {
+        var result = adRepository.findRandomAd()
+                .orElseThrow(() -> new RuntimeException("Didnt find add"));
 
-
-
+        return mapperAd.toDto(result);
+    }
 }

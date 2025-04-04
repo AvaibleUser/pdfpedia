@@ -20,12 +20,13 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class AdViewsService {
+public class AdViewsService implements IAdViewsService {
 
     private final AdViewsRepository adViewsRepository;
     private final AdRepository adRepository;
     private final MapperAd mapperAd;
 
+    @Override
     @Transactional
     public void create(@Valid AdViewCreateDto dto){
 
@@ -40,6 +41,7 @@ public class AdViewsService {
         this.adViewsRepository.save(create);
     }
 
+    @Override
     public TotalViewsAdDto getTotalViews(Long userId){
         return TotalViewsAdDto
                 .builder()
@@ -47,21 +49,26 @@ public class AdViewsService {
                 .build();
     }
 
+    @Override
     public List<PostAdMount> getPostMount(Long userId) {
         return this.adViewsRepository.countViewsAdsByMonth(userId);
     }
 
+    @Override
     public List<AdViewReportDto> getReportViewsAll(Long userId){
         List<AdEntity> ads = this.adRepository.findByAdvertiser_Id(userId);
         return ads.stream().map(this.mapperAd::adViewsDto).toList();
     }
 
+    @Override
     public boolean isWithinRange(Instant createdAt, LocalDate startDate, LocalDate endDate) {
         LocalDate createdDate = createdAt.atZone(ZoneId.systemDefault()).toLocalDate();
         return (startDate == null || !createdDate.isBefore(startDate)) &&
                 (endDate == null || !createdDate.isAfter(endDate));
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<AdViewReportDto> getReportViewsFilterDate(LocalDate startDate, LocalDate endDate, Long userId) {
         List<AdEntity> ads = this.adRepository.findByAdvertiser_Id(userId);
 
@@ -79,6 +86,8 @@ public class AdViewsService {
         }).toList();
     }
 
+    @Override
+    @Transactional(readOnly = true)
     public List<AdViewReportDto> getReportViews(LocalDate startDate, LocalDate endDate, Long userId) {
         if (startDate == null && endDate == null) {
             return this.getReportViewsAll(userId);

@@ -31,7 +31,7 @@ public class IssueService implements IIssueService {
         if (!magazineRepository.existsById(magazineId)) {
             throw new BadRequestException("La revista no existe");
         }
-        return issueRepository.findByIdAndMagazineId(issueId, magazineId, MagazineIssueDto.class)
+        return issueRepository.findByIdAndMagazineIdAndIsDeletedFalse(issueId, magazineId, MagazineIssueDto.class)
                 .orElseThrow(() -> new ValueNotFoundException("No se encontró la revista"));
     }
 
@@ -52,11 +52,13 @@ public class IssueService implements IIssueService {
         if (!magazineRepository.existsById(magazineId)) {
             throw new BadRequestException("La revista no existe");
         }
-        MagazineEntity magazine = magazineRepository.findById(magazineId).get();
+        MagazineEntity magazine = magazineRepository
+                .findByIdAndEditorIdAndIsDeletedFalse(magazineId, editorId, MagazineEntity.class)
+                .orElseThrow(() -> new ValueNotFoundException("No se encontró la revista"));
 
         MagazineIssueEntity issue = issueRepository.save(MagazineIssueEntity.builder()
                 .magazine(magazine)
-                .title(newIssue.title().filter(StringUtils::isBlank).orElse(null))
+                .title(newIssue.title().filter(StringUtils::isNotBlank).orElse(null))
                 .pdfUrl(pdfUrl)
                 .build());
 

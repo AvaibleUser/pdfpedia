@@ -22,10 +22,12 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import lombok.With;
 
 @Entity(name = "magazine_issue")
 @Table(name = "magazine_issue", schema = "magazine_control")
 @Data
+@With
 @Builder(toBuilder = true)
 @EqualsAndHashCode(of = "id")
 @NoArgsConstructor

@@ -9,10 +9,11 @@ import org.cunoc.pdfpedia.domain.entity.user.UserEntity;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.MapsId;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -32,15 +33,18 @@ import lombok.RequiredArgsConstructor;
 @AllArgsConstructor(access = PRIVATE)
 public class SubscriptionEntity {
 
-    @Id
+    @EmbeddedId
+    private SubscriptionId id;
+
     @NonNull
     @ManyToOne(optional = false)
+    @MapsId("userId")
     @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
-    @Id
     @NonNull
     @ManyToOne(optional = false)
+    @MapsId("magazineId")
     @JoinColumn(name = "magazine_id", nullable = false)
     private MagazineEntity magazine;
 

@@ -8,19 +8,23 @@ import java.lang.annotation.Inherited;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
-import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.core.annotation.AliasFor;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 
 @Target(TYPE)
 @Retention(RUNTIME)
 @ActiveProfiles("test")
 @Inherited
 @Documented
-@SpringBootTest
-@AutoConfigureCache
-@AutoConfigureMockMvc
+@WebMvcTest
+@ContextConfiguration
 public @interface ApiTest {
 
+    @AliasFor(annotation = WebMvcTest.class, attribute = "controllers")
+    Class<?>[] controllers() default {};
+
+    @AliasFor(annotation = ContextConfiguration.class, attribute = "classes")
+    Class<?>[] classes() default {};
 }
