@@ -1,6 +1,7 @@
 package org.cunoc.pdfpedia.service.admin.export;
 
 import lombok.RequiredArgsConstructor;
+import org.cunoc.pdfpedia.domain.dto.admin.report.adEffectiveness.ReportAdvertiserAdViews;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earnings.EarningsReport;
 import org.cunoc.pdfpedia.domain.dto.admin.report.earningsToAnnouncer.TotalReportPaymentPostAdByAnnouncersDto;
 import org.cunoc.pdfpedia.domain.dto.admin.report.postAd.PostAdReportTotal;
@@ -83,6 +84,18 @@ public class ExportReportService {
         templateVariables.put("companyLogo", "https://res.cloudinary.com/ddkp3bobz/image/upload/v1742243659/Yc9SIViERyKTTCs71iDz-g_hfvelz.webp");
 
         return this.pdfService.downloadPdf("report-magazine-comments",templateVariables);
+
+    }
+
+    public ResponseEntity<Resource> exportReportAdEffectiveness(ReportAdvertiserAdViews dto) {
+        Map<String, Object> templateVariables = new HashMap<>();
+
+        templateVariables.put("dateReport", LocalDate.now());
+        templateVariables.put("range", dto.range());
+        templateVariables.put("advertiserAdViews", dto.advertiserAdViews());
+        templateVariables.put("companyLogo", "https://res.cloudinary.com/ddkp3bobz/image/upload/v1742243659/Yc9SIViERyKTTCs71iDz-g_hfvelz.webp");
+
+        return this.pdfService.downloadPdf("ad-effectivess",templateVariables);
 
     }
 
